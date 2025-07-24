@@ -1,4 +1,6 @@
 import React from "react";
+import profilePic from "../assets/profile.jpg";
+
 
 const HeroAbout = () => {
   return (
@@ -8,7 +10,10 @@ const HeroAbout = () => {
         {/* Left Text Content */}
         <div className="md:w-1/2">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Hi, I’m <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 animate-pulse">Kaustubh</span>
+            Hi, I’m{" "}
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-pink-400 animate-pulse">
+              Kaustubh
+            </span>
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
             I’m a passionate Frontend Developer with a knack for building clean, responsive, and user-friendly web interfaces.
@@ -24,7 +29,7 @@ const HeroAbout = () => {
         {/* Right Image */}
         <div className="md:w-1/2 flex justify-center">
           <img
-            src="src\assets\profile .jpg"
+            src={profilePic}
             alt="Kaustubh Profile"
             className="w-64 h-64 rounded-full object-cover shadow-lg
             transition-transform duration-500 ease-in-out hover:scale-105 hover:rotate-3 active:scale-95"
@@ -33,11 +38,13 @@ const HeroAbout = () => {
       </div>
 
       {/* ✅ About Section */}
-      <div id="about" className="bg-gray-100 dark:bg-gray-800 py-16 px-6 animate-slideIn" >
+      <div id="about" className="bg-gray-100 dark:bg-gray-800 py-16 px-6 animate-slideIn">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">About Me</h2>
           <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
-            I hold an MCA degree and have recently completed a frontend internship where I built real-world responsive features. I'm skilled in HTML, CSS, JavaScript, React, and Tailwind, and currently building strong DSA fundamentals alongside developing major projects like <strong>Mentii – A Mental Health Buddy</strong>. I’m aiming for roles in well organizations.
+            I hold an MCA degree and have recently completed a frontend internship where I built real-world responsive features. 
+            I'm skilled in HTML, CSS, JavaScript, React, and Tailwind, and currently building strong DSA fundamentals alongside developing 
+            major projects like <strong>Mentii – A Mental Health Buddy</strong>. I’m aiming for roles in well organizations.
           </p>
         </div>
       </div>
