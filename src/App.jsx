@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Education from './pages/Education';
 import Skills from './pages/Skills';
 import Projects from './pages/ProjectsSection';
-import LeetCode from './pages/LeetCode';
+import LeetCode from './pages/Leetcode';
 import Contact  from './pages/Contact';
 
 import './App.css';
