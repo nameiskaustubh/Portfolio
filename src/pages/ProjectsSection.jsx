@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FaGithub, FaExternalLinkAlt, FaCode, FaEye } from "react-icons/fa";
 
-import mentiiImage from './assets/mentiii.png';
-import colormazImage from './assets/colormaz.png';
-import weatherImage from './assets/weather.png';
+import mentiiImage from '../components/assets/mentiii.png';
+import colormazImage from '../components/assets/colormaz.png';
+import weatherImage from '../components/assets/weather.png';
 
 
 const Projects = () => {
