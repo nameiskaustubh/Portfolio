@@ -5,9 +5,7 @@ import profilePic from "../assets/profile.jpg";
 const HeroAbout = () => {
   return (
     <section id="home" className="bg-white dark:bg-gray-900 text-gray-800 dark:text-white">
-      {/* ✅ Hero Section */}
       <div className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto px-6 py-20 gap-10">
-        {/* Left Text Content */}
         <div className="md:w-1/2">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Hi, I’m{" "}
@@ -26,7 +24,6 @@ const HeroAbout = () => {
           </a>
         </div>
 
-        {/* Right Image */}
         <div className="md:w-1/2 flex justify-center">
           <img
             src={profilePic}
@@ -37,7 +34,6 @@ const HeroAbout = () => {
         </div>
       </div>
 
-      {/* ✅ About Section */}
       <div id="about" className="bg-gray-100 dark:bg-gray-800 py-16 px-6 animate-slideIn">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">About Me</h2>

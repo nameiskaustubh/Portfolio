@@ -1,36 +1,38 @@
-import Navbar from './components/Navbar'
-import HeroAbout from './components/HeroAbout';
-// import About from './components/About'
-import Education from './components/Education';
-import Skills from './components/Skills';
-import './App.css'
-import LeetCodeTracker from "./components/LeetCodeTracker";
-import ProjectsSection from "./components/ProjectsSection";
-import Footer from "./components/Footer";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Education from './pages/Education';
+import Skills from './pages/Skills';
+import Projects from './pages/ProjectsSection';
+import LeetCode from './pages/LeetCode';
+import Contact  from './pages/Contact';
+
+import './App.css';
+
 function App() {
   return (
-    <div className="App">
-      <Navbar/>
-      <section id='hero'>
-      <HeroAbout />
-      </section>
-      {/* <About/> */}
-      <section id='education'>
-      <Education/>
-      </section>
-      <Skills/>
-      <section id='leetcode'>
-      <LeetCodeTracker username="afcpwRGndV" />
-      </section>
-      <section id="projects">
-      <ProjectsSection />
-      </section>
-      <section id='contact'>
-        <Footer/>
-      </section>
-    </div>
+    <Router>
+      <div className="App min-h-screen flex flex-col">
+        <Navbar />
+        
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/education" element={<Education />} />
+            <Route path="/skills" element={<Skills />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/leetcode" element={<LeetCode />} />
+            <Route path="/Contact" element={<Contact/>} />
+            
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </Router>
   );
 }
-
 
 export default App;

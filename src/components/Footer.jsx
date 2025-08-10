@@ -8,9 +8,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-900 text-gray-300 py-8 px-4 md:px-10">
-      {/* Top section - Brand & Resume Buttons */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
-        {/* Left - Brand */}
         <div className="text-center md:text-left">
           <h2 className="text-xl font-bold text-white">Kaustubh Deshmukh</h2>
           <p className="text-sm text-gray-400">
@@ -18,17 +16,16 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Right - Resume Buttons */}
         <div className="flex gap-3">
           <a
-            href="/assets/Kaustubh_Deshmukh_Resume.pdf"
+            href="public/assets/Resume_Kaustubh_Deshmukh.pdf"
             download
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-xl text-sm transition-all"
           >
             <FaFileDownload /> Download Resume
           </a>
           <a
-            href="/assets/Kaustubh_Deshmukh_Resume.pdf"
+            href="public/assets/Resume_Kaustubh_Deshmukh.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-xl text-sm transition-all"
@@ -38,9 +35,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Divider */}
       <div className="border-t border-gray-700 pt-6">
-        {/* Social Links */}
         <div className="flex flex-wrap gap-5 justify-center text-xl mb-4">
           <a
             href="https://linkedin.com/in/kaustubh-deshmukh8851"
@@ -92,7 +87,6 @@ const Footer = () => {
 </a>
         </div>
 
-        {/* Copyright */}
         <div className="text-center text-sm text-gray-400">
           © {currentYear} Kaustubh Deshmukh. All Rights Reserved.
         </div>
