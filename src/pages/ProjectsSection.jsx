@@ -1,15 +1,59 @@
 import React, { useState } from "react";
 import { FaGithub, FaExternalLinkAlt, FaCode, FaEye } from "react-icons/fa";
 
+import mentiiImage from './assets/mentiii.png';
+import colormazImage from './assets/colormaz.png';
+import weatherImage from './assets/weather.png';
+
+
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // const projects = [
+  //   {
+  //     title: "Mentii - Your Mental Health Buddy",
+  //     description:
+  //       "A comprehensive React-based mental health platform featuring a CBT chatbot, sentiment analyzer, and mood prediction game. Built with Firebase for real-time data management.",
+  //     image: "src/components/assets/mentiii.png",
+  //     techStack: ["React", "Firebase", "Tailwind CSS", "TensorFlow", "JavaScript"],
+  //     github: "https://github.com/nameiskaustubh/mentiii",
+  //     live: "https://mentiii-kaustubhds-projects.vercel.app/",
+  //     category: "fullstack",
+  //     featured: true,
+  //     status: "completed"
+  //   },
+  //   {
+  //     title: "Color Maze Mood Game",
+  //     description:
+  //       "An interactive JavaScript maze game that predicts user mood based on color choices and completion time. Features Firebase integration for storing user results and analytics.",
+  //     image: "src/components/assets/colormaz.png",
+  //     techStack: ["JavaScript", "Firebase", "HTML5", "CSS3", "Canvas API"],
+  //     github: "https://github.com/yourname/maze-mood-game",
+  //     live: "https://maze-mood.netlify.app",
+  //     category: "frontend",
+  //     featured: false,
+  //     status: "completed"
+  //   },
+  //   {
+  //     title: "Weather App",
+  //     description:
+  //       "A responsive weather application built with React and TailwindCSS. Uses OpenWeather API to display real-time weather conditions, forecasts, and location-based weather data.",
+  //     image: "src/components/assets/weather.png",
+  //     techStack: ["React", "TailwindCSS", "OpenWeather API", "Vite", "Material UI"],
+  //     github: "https://github.com/nameiskaustubh/weather-app",
+  //     live: "https://weather-app-kaustubh-deshmukhs-projects.vercel.app/",
+  //     category: "frontend",
+  //     featured: false,
+  //     status: "completed"
+  //   }
+  // ];
+
 
   const projects = [
     {
       title: "Mentii - Your Mental Health Buddy",
-      description:
-        "A comprehensive React-based mental health platform featuring a CBT chatbot, sentiment analyzer, and mood prediction game. Built with Firebase for real-time data management.",
-      image: "src/components/assets/mentiii.png",
+      description: "A comprehensive React-based mental health platform...",
+      image: mentiiImage, // ✅ use imported variable
       techStack: ["React", "Firebase", "Tailwind CSS", "TensorFlow", "JavaScript"],
       github: "https://github.com/nameiskaustubh/mentiii",
       live: "https://mentiii-kaustubhds-projects.vercel.app/",
@@ -19,9 +63,8 @@ const Projects = () => {
     },
     {
       title: "Color Maze Mood Game",
-      description:
-        "An interactive JavaScript maze game that predicts user mood based on color choices and completion time. Features Firebase integration for storing user results and analytics.",
-      image: "src/components/assets/colormaz.png",
+      description: "An interactive JavaScript maze game...",
+      image: colormazImage, // ✅
       techStack: ["JavaScript", "Firebase", "HTML5", "CSS3", "Canvas API"],
       github: "https://github.com/yourname/maze-mood-game",
       live: "https://maze-mood.netlify.app",
@@ -31,9 +74,8 @@ const Projects = () => {
     },
     {
       title: "Weather App",
-      description:
-        "A responsive weather application built with React and TailwindCSS. Uses OpenWeather API to display real-time weather conditions, forecasts, and location-based weather data.",
-      image: "src/components/assets/weather.png",
+      description: "A responsive weather application...",
+      image: weatherImage, // ✅
       techStack: ["React", "TailwindCSS", "OpenWeather API", "Vite", "Material UI"],
       github: "https://github.com/nameiskaustubh/weather-app",
       live: "https://weather-app-kaustubh-deshmukhs-projects.vercel.app/",
@@ -42,6 +84,7 @@ const Projects = () => {
       status: "completed"
     }
   ];
+  
 
   const categories = [
     { id: 'all', name: 'All Projects', count: projects.length },
