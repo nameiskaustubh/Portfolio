@@ -18,14 +18,14 @@ const Footer = () => {
 
         <div className="flex gap-3">
           <a
-            href="public/assets/Resume_Kaustubh_Deshmukh.pdf"
+            href="/assets/Resume_Kaustubh_Deshmukh.pdf"
             download
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-xl text-sm transition-all"
           >
             <FaFileDownload /> Download Resume
           </a>
           <a
-            href="public/assets/Resume_Kaustubh_Deshmukh.pdf"
+            href="/assets/Resume_Kaustubh_Deshmukh.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-xl text-sm transition-all"
