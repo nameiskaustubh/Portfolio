@@ -26,12 +26,12 @@ const Home = () => {
               >
                 See My Work
               </Link>
-              <Link
-                to="/about"
-                className="inline-block border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition"
-              >
-                Learn More
-              </Link>
+              <a
+                  href="#about"
+                  className="inline-block border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition"
+                  >
+             Learn More
+              </a>
             </div>
           </div>
 
@@ -46,7 +46,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section id="about" className="bg-gray-100 dark:bg-gray-800 py-16 px-6">
+      <section id="about" className="bg-gray-100 dark:bg-gray-800 py-16 px-6 scroll-mt-20 md:scroll-mt-24">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-center">About Me</h2>
           

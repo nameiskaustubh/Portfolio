@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
+// import About from './components/About';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'About', id: 'about' },
+    // { path: '/', label: 'About', id: 'about' },
+    { path: '/about', label: 'About', id: 'about' },
+
     { path: '/education', label: 'Education', id: 'education' },
     { path: '/skills', label: 'Skills', id: 'skills' },
     { path: '/projects', label: 'Projects', id: 'projects' },
