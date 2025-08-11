@@ -27,7 +27,7 @@ const Home = () => {
                 See My Work
               </Link>
               <Link
-                to="/aboutm"
+                to="/#aboutm"
                 className="inline-block border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition"
               >
                 Learn More
