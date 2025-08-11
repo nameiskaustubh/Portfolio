@@ -180,7 +180,7 @@ const LeetCode = () => {
             <div className="grid md:grid-cols-2 gap-12 mb-8">
               <div>
                 <div className="text-5xl font-bold text-orange-400 mb-2">300+</div>
-                <div className="text-gray-400 text-lg">Problems Solved</div>
+                <div className="text-gray-400 text-lg">Problems to Solve</div>
               </div>
               <div>
                 <div className="text-5xl font-bold text-purple-400 mb-2">Top 20%</div>
