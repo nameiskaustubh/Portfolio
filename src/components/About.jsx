@@ -4,7 +4,7 @@ import {motion} from "framer-motion";
 const About =() =>{
     return(
         <section
-        id="about"
+        id="aboutm"
         className="min-h-screen flex flex-col justify-center items-center bg-white px-6 py-16"
         >
             <motion.h2
