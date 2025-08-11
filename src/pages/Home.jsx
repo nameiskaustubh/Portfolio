@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import profilePic from "../assets/profile.jpg";
 
 const Home = () => {
@@ -19,18 +20,18 @@ const Home = () => {
               I'm a passionate Frontend Developer with a knack for building clean, responsive, and user-friendly web interfaces.
             </p>
             <div className="flex gap-4">
-              <a
-                href="/projects"
+              <Link
+                to="/projects"
                 className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-blue-700 transition"
               >
                 See My Work
-              </a>
-              <a
-                href="#about"
+              </Link>
+              <Link
+                to="/about"
                 className="inline-block border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition"
               >
                 Learn More
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -85,7 +86,6 @@ const Home = () => {
         </div>
       </section>
 
-      
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Let's Build Something Amazing Together</h2>
@@ -93,24 +93,23 @@ const Home = () => {
             I'm always excited to work on new projects and collaborate with fellow developers.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="/projects"
+            <Link
+              to="/projects"
               className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg"
             >
               View My Projects
-            </a>
-            <a
-              href="/skills"
+            </Link>
+            <Link
+              to="/skills"
               className="bg-gradient-to-r from-green-500 to-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-teal-700 transition transform hover:scale-105 shadow-lg"
             >
               Explore My Skills
-            </a>
+            </Link>
           </div>
         </div>
       </section>
-      <section>
-       
-      </section>
+      
+      <section></section>
     </div>
   );
 };
