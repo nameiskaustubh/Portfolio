@@ -1,7 +1,5 @@
 import React from "react";
-//import ProjectsSection from "react";
 import profilePic from "../assets/profile.jpg";
-// import LeetCodeTracker from "../components/LeetCodeTracker";
 
 const Home = () => {
   return (
