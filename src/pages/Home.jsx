@@ -1,4 +1,4 @@
-import React from "react";
+projectseact from "react";
 import profilePic from "../assets/profile.jpg";
 // import LeetCodeTracker from "../components/LeetCodeTracker";
 
@@ -21,7 +21,7 @@ const Home = () => {
             </p>
             <div className="flex gap-4">
               <a
-                href="/projects"
+                href="/Projects"
                 className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-blue-700 transition"
               >
                 See My Work
@@ -95,7 +95,7 @@ const Home = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="/projects"
+              href="/Projects"
               className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg"
             >
               View My Projects
