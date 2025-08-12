@@ -30,13 +30,18 @@ const Contact = () => {
     const templateId = "template_i18ju09";
     const publicKey = "Q-h55re78pcIna9G1";
 
+    // FIXED: Match the parameter names with your EmailJS template
     const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      subject: formData.subject,
-      message: formData.message,
-      reply_to: formData.email
+      name: formData.name,           // Matches {{name}} in template
+      email: formData.email,         // Matches {{email}} in template  
+      subject: formData.subject,     // Matches {{subject}} in template
+      message: formData.message,     // Matches {{message}} in template
+      reply_to: formData.email,      // For reply-to functionality
+      time: new Date().toLocaleString() // Add timestamp
     };
+
+    // Debug: Log what we're sending
+    console.log("Sending EmailJS params:", templateParams);
 
     try {
       const result = await emailjs.send(serviceId, templateId, templateParams, publicKey);
@@ -117,74 +122,75 @@ const Contact = () => {
                 </div>
               )}
 
-              <div className="space-y-5">
-                <div className="grid sm:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-5">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                      <input 
+                        type="text" 
+                        name="name" 
+                        value={formData.name} 
+                        onChange={handleInputChange} 
+                        required 
+                        className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors" 
+                        placeholder="Your full name" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                      <input 
+                        type="email" 
+                        name="email" 
+                        value={formData.email} 
+                        onChange={handleInputChange} 
+                        required 
+                        className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors" 
+                        placeholder="your.email@example.com" 
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
                     <input 
                       type="text" 
-                      name="name" 
-                      value={formData.name} 
+                      name="subject" 
+                      value={formData.subject} 
                       onChange={handleInputChange} 
                       required 
                       className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors" 
-                      placeholder="Your full name" 
+                      placeholder="What's this about?" 
                     />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                    <input 
-                      type="email" 
-                      name="email" 
-                      value={formData.email} 
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Message</label>
+                    <textarea 
+                      name="message" 
+                      value={formData.message} 
                       onChange={handleInputChange} 
                       required 
-                      className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors" 
-                      placeholder="your.email@example.com" 
+                      rows={4} 
+                      className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors resize-none" 
+                      placeholder="Tell me about your project or opportunity..." 
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
-                  <input 
-                    type="text" 
-                    name="subject" 
-                    value={formData.subject} 
-                    onChange={handleInputChange} 
-                    required 
-                    className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors" 
-                    placeholder="What's this about?" 
-                  />
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting} 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                        Sending...
+                      </div>
+                    ) : "Send Message"}
+                  </button>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Message</label>
-                  <textarea 
-                    name="message" 
-                    value={formData.message} 
-                    onChange={handleInputChange} 
-                    required 
-                    rows={4} 
-                    className="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-400 focus:outline-none transition-colors resize-none" 
-                    placeholder="Tell me about your project or opportunity..." 
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  onClick={handleSubmit}
-                  disabled={isSubmitting} 
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                      Sending...
-                    </div>
-                  ) : "Send Message"}
-                </button>
-              </div>
+              </form>
             </div>
           </div>
 
