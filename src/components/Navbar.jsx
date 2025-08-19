@@ -75,16 +75,17 @@ const Navbar = () => {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex-shrink-0 animate-in slide-in-from-left duration-700">
-              <Link to="/" className="flex items-center hover:scale-105 transition-transform duration-300">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-red-500 rounded-lg flex items-center justify-center mr-3 transform hover:rotate-12 transition-transform duration-300">
-                  <span className="text-white font-bold text-sm">KD</span>
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
-                  Portfolio
-                </span>
-              </Link>
-            </div>
+          <div className="flex-shrink-0">
+  <Link to="/" className="flex items-center gap-2">
+    <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+      <span className="text-white font-bold text-sm">KD</span>
+    </div>
+    <span className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+      Portfolio
+    </span>
+  </Link>
+</div>
+
 
             <div className="hidden md:block animate-in slide-in-from-top duration-700 delay-200">
               <div className="ml-10 flex items-baseline space-x-1">

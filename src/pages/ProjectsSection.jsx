@@ -4,6 +4,7 @@ import { FaGithub, FaExternalLinkAlt, FaCode, FaEye } from "react-icons/fa";
 import mentiiImage from '../components/assets/mentiii.png';
 import colormazImage from '../components/assets/colormaz.png';
 import weatherImage from '../components/assets/weather.png';
+import pasteAppImage from '../components/assets/Paste.png';
 
 
 const Projects = () => {
@@ -82,9 +83,21 @@ const Projects = () => {
       category: "frontend",
       featured: false,
       status: "completed"
+    },
+    {
+      title: "Paste App - Simple Online Clipboard",
+      description: "A React + Redux based application that allows users to create, edit, view, delete, and share text snippets (pastes). Features include search, copy-to-clipboard, and localStorage persistence.",
+      image: pasteAppImage, // ✅ import an image screenshot or logo as pasteAppImage
+      techStack: ["React", "Redux Toolkit", "Tailwind CSS", "JavaScript", "Vite"],
+      github: "https://github.com/nameiskaustubh/Paste-App",
+      live: "https://paste-app-silk-alpha.vercel.app/",
+      category: "frontend",
+      featured: true,
+      status: "completed"
     }
+
   ];
-  
+
 
   const categories = [
     { id: 'all', name: 'All Projects', count: projects.length },
@@ -92,8 +105,8 @@ const Projects = () => {
     { id: 'frontend', name: 'Frontend', count: projects.filter(p => p.category === 'frontend').length },
   ];
 
-  const filteredProjects = selectedCategory === 'all' 
-    ? projects 
+  const filteredProjects = selectedCategory === 'all'
+    ? projects
     : projects.filter(project => project.category === selectedCategory);
 
   const featuredProjects = projects.filter(project => project.featured);
@@ -101,7 +114,7 @@ const Projects = () => {
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       <div className="container mx-auto px-6 py-12">
-      
+
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-white mb-4">
             My <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Projects</span>
@@ -112,7 +125,7 @@ const Projects = () => {
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
         </div>
 
-       
+
         {featuredProjects.length > 0 && (
           <div className="mb-16">
             <h2 className="text-3xl font-bold text-white mb-8 text-center">Featured Projects</h2>
@@ -125,15 +138,14 @@ const Projects = () => {
                         <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-sm font-semibold mr-3">
                           ⭐ Featured
                         </span>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
                           {project.status === 'completed' ? '✅ Completed' : '🚧 In Progress'}
                         </span>
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-4">{project.title}</h3>
                       <p className="text-gray-300 mb-6 leading-relaxed">{project.description}</p>
-                      
+
                       <div className="flex flex-wrap gap-2 mb-6">
                         {project.techStack.map((tech, i) => (
                           <span
@@ -168,8 +180,12 @@ const Projects = () => {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-64 object-cover rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
+                        className={`w-full h-48 rounded-xl transition-transform duration-500 ${project.title.includes("Paste App")
+                            ? "object-contain bg-white p-4 group-hover:scale-105"
+                            : "object-cover group-hover:scale-110"
+                          }`}
                       />
+
                     </div>
                   </div>
                 </div>
@@ -178,24 +194,23 @@ const Projects = () => {
           </div>
         )}
 
-       
+
         <div className="flex flex-wrap justify-center gap-4 mb-12">
           {categories.map(category => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${
-                selectedCategory === category.id
+              className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${selectedCategory === category.id
                   ? 'bg-blue-600 text-white shadow-lg'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+                }`}
             >
               {category.name} ({category.count})
             </button>
           ))}
         </div>
 
-        
+
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project, index) => (
             <div
@@ -276,7 +291,7 @@ const Projects = () => {
           ))}
         </div>
 
-        
+
         <div className="text-center mt-16 bg-gradient-to-r from-gray-800 to-gray-700 rounded-3xl p-8">
           <h3 className="text-2xl font-bold text-white mb-4">Interested in collaborating?</h3>
           <p className="text-gray-400 mb-6">

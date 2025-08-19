@@ -93,18 +93,20 @@ const Home = () => {
             I'm always excited to work on new projects and collaborate with fellow developers.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to="/projects"
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition transform hover:scale-105 shadow-lg"
-            >
-              View My Projects
-            </Link>
-            <Link
-              to="/skills"
-              className="bg-gradient-to-r from-green-500 to-teal-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-teal-700 transition transform hover:scale-105 shadow-lg"
-            >
-              Explore My Skills
-            </Link>
+          <Link
+  to="/projects"
+  className="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-medium hover:bg-blue-200 transition-colors"
+>
+  View My Projects
+</Link>
+
+<Link
+  to="/skills"
+  className="bg-green-100 text-green-700 px-6 py-2 rounded-lg font-medium hover:bg-green-200 transition-colors"
+>
+  Explore My Skills
+</Link>
+
           </div>
         </div>
       </section>
