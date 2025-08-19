@@ -308,9 +308,14 @@ const LeetCodeTracker = ({ username, displayName }) => {
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <div className="text-lg font-bold text-gray-800">
-                {stats.accuracy ? 
-                  (typeof stats.accuracy === 'string' ? stats.accuracy : (stats.accuracy * 100).toFixed(1) + "%") 
-                  : "N/A"}
+                {!stats.accuracy 
+                    
+                    ? "N/A"
+                    : typeof stats.accuracy === "string"
+                    ? stats.accuracy 
+                    :stats.accuracy > 1
+                    ? `${stats.accuracy.toFixed(1)}%`
+                    : `${(stats.accuracy * 100).toFixed(1)}%`}
               </div>
               <div className="text-xs text-gray-600">Rate</div>
             </div>
