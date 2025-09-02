@@ -13,6 +13,7 @@ import LeetCode from './pages/Leetcode';
 import Services from './pages/Services';
 import Contact from './pages/Contact';
 import PageWrapper from './components/PageWrapper';
+import GalaxyBackground from "./components/GalaxyBackground";
 
 import './App.css';
 
@@ -38,10 +39,13 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
-      <div className="App bg-gray-800 min-h-screen flex flex-col">
+      <div className="App bg-gray-800 min-h-screen flex flex-col relative">
+        
+      <GalaxyBackground />
+
         <Navbar />
         
-        <main className="flex-grow">
+        <main className="flex-grow relative z-10">
           <AnimatedRoutes />
         </main>
 

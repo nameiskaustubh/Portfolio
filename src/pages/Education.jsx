@@ -30,7 +30,7 @@ const Education = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 pt-20">
+    <div className="min-h-screen bg-slate-900/80 pt-20">
       <section className="py-20 relative">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
