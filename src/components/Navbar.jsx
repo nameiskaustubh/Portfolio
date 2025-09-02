@@ -8,13 +8,18 @@ const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
+    { path: '/', label: 'Home', id: 'Home' },
     { path: '/about', label: 'About', id: 'about' },
     { path: '/education', label: 'Education', id: 'education' },
     { path: '/skills', label: 'Skills', id: 'skills' },
     { path: '/projects', label: 'Projects', id: 'projects' },
     { path: '/leetcode', label: 'LeetCode', id: 'leetcode' },
+    { path: '/Services', label: 'Services', id: 'Services' },
     { path: '/Contact', label: 'Contact', id: 'Contact' },
   ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,7 +83,7 @@ const Navbar = () => {
           <div className="flex-shrink-0">
   <Link to="/" className="flex items-center gap-2">
     <div className="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
-      <span className="text-white font-bold text-sm">KD</span>
+      <span className="text-white font-bold text-sm"> KD </span>
     </div>
     <span className="text-xl font-semibold text-gray-800 dark:text-gray-200">
       Portfolio
@@ -104,10 +109,7 @@ const Navbar = () => {
                       <span>{item.label}</span>
                     </span>
                     
-                    {location.pathname === item.path && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-gradient-to-r from-blue-500 to-blue-500 rounded-full animate-pulse"></div>
-                    )}
-                    
+                                      
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </Link>
                 ))}

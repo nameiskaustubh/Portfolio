@@ -12,20 +12,21 @@ const Footer = () => {
         <div className="text-center md:text-left">
           <h2 className="text-xl font-bold text-white">Kaustubh Deshmukh</h2>
           <p className="text-sm text-gray-400">
-            Frontend Developer & DSA Practitioner
+            Web Developer | Freelancer | <br />
+            ReactJs | JavaScript | NodeJs
           </p>
         </div>
 
         <div className="flex gap-3">
           <a
-            href="/assets/Resume_Kaustubh_Deshmukh.pdf"
+            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
             download
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-xl text-sm transition-all"
           >
             <FaFileDownload /> Download Resume
           </a>
           <a
-            href="/assets/Resume_Kaustubh_Deshmukh.pdf"
+            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-xl text-sm transition-all"

@@ -76,10 +76,10 @@ const Contact = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-green-900/30 border border-green-800/50 text-green-300 px-3 py-1.5 rounded-full text-sm font-medium mb-6">
+          {/* <div className="inline-flex items-center gap-2 bg-green-900/30 border border-green-800/50 text-green-300 px-3 py-1.5 rounded-full text-sm font-medium mb-6">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             Available for Work
-          </div>
+          </div> */}
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
             Let's Work Together
           </h1>

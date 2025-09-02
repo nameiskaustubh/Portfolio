@@ -13,10 +13,10 @@ const LeetCode = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             
-            <div className="inline-flex items-center gap-3 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-full px-5 py-2 mb-8">
+            {/* <div className="inline-flex items-center gap-3 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-full px-5 py-2 mb-8">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-green-400 text-sm font-medium">Currently Learning</span>
-            </div>
+            </div> */}
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
               LeetCode Progress
