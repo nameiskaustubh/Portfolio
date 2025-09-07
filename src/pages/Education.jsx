@@ -101,6 +101,7 @@ const Education = () => {
           </div>
         </div>
       </section>
+     
     </div>
   );
 };

@@ -10,7 +10,7 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home', id: 'Home' },
     { path: '/about', label: 'About', id: 'about' },
-    { path: '/education', label: 'Education', id: 'education' },
+    // { path: '/education', label: 'Education', id: 'education' },
     { path: '/skills', label: 'Skills', id: 'skills' },
     { path: '/projects', label: 'Projects', id: 'projects' },
     { path: '/leetcode', label: 'LeetCode', id: 'leetcode' },
@@ -49,13 +49,11 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [location]); // Re-run when location changes
+  }, [location]); 
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
-    // Reset scroll progress when navigating to a new page
     setScrollProgress(0);
-    // Recalculate after a short delay to allow page content to load
     setTimeout(() => {
       const scrollPosition = window.scrollY;
       const documentHeight = document.documentElement.scrollHeight;
@@ -167,7 +165,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Fixed Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-200/20 dark:bg-gray-700/20">
         <div 
           className="h-full bg-gradient-to-r from-blue-500 to-sky-500 transition-all duration-150 ease-out"

@@ -8,7 +8,7 @@ const Footer = () => {
 
   return (
     <footer className="bg-gray-900 text-gray-300 py-8 px-4 md:px-10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
+      {/* <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
         <div className="text-center md:text-left">
           <h2 className="text-xl font-bold text-white">Kaustubh Deshmukh</h2>
           <p className="text-sm text-gray-400">
@@ -34,7 +34,7 @@ const Footer = () => {
             <FaEye /> View Resume
           </a>
         </div>
-      </div>
+      </div> */}
 
       <div className="border-t border-gray-700 pt-6">
         <div className="flex flex-wrap gap-5 justify-center text-xl mb-4">

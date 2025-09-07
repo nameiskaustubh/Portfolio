@@ -10,7 +10,7 @@ import pasteAppImage from '../components/assets/Paste.png';
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // const projects = [
+  
   //   {
   //     title: "Mentii - Your Mental Health Buddy",
   //     description:
@@ -54,7 +54,7 @@ const Projects = () => {
     {
       title: "Mentii - Your Mental Health Buddy",
       description: "A comprehensive React-based mental health platform...",
-      image: mentiiImage, // ✅ use imported variable
+      image: mentiiImage,
       techStack: ["React", "Firebase", "Tailwind CSS", "TensorFlow", "JavaScript"],
       github: "https://github.com/nameiskaustubh/mentiii",
       live: "https://mentiii-kaustubhds-projects.vercel.app/",
@@ -65,7 +65,7 @@ const Projects = () => {
     {
       title: "Color Maze Mood Game",
       description: "An interactive JavaScript maze game...",
-      image: colormazImage, // ✅
+      image: colormazImage, 
       techStack: ["JavaScript", "Firebase", "HTML5", "CSS3", "Canvas API"],
       github: "https://github.com/yourname/maze-mood-game",
       live: "https://maze-mood.netlify.app",
@@ -76,7 +76,7 @@ const Projects = () => {
     {
       title: "Weather App",
       description: "A responsive weather application...",
-      image: weatherImage, // ✅
+      image: weatherImage, 
       techStack: ["React", "TailwindCSS", "OpenWeather API", "Vite", "Material UI"],
       github: "https://github.com/nameiskaustubh/weather-app",
       live: "https://weather-app-kaustubh-deshmukhs-projects.vercel.app/",
@@ -87,7 +87,7 @@ const Projects = () => {
     {
       title: "Paste App - Simple Online Clipboard",
       description: "A React + Redux based application that allows users to create, edit, view, delete, and share text snippets (pastes). Features include search, copy-to-clipboard, and localStorage persistence.",
-      image: pasteAppImage, // ✅ import an image screenshot or logo as pasteAppImage
+      image: pasteAppImage,
       techStack: ["React", "Redux Toolkit", "Tailwind CSS", "JavaScript", "Vite"],
       github: "https://github.com/nameiskaustubh/Paste-App",
       live: "https://paste-app-silk-alpha.vercel.app/",
@@ -112,7 +112,7 @@ const Projects = () => {
   const featuredProjects = projects.filter(project => project.featured);
 
   return (
-    <div className="min-h-screen bg-gray-900 pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-blue-950 pt-20">
       <div className="container mx-auto px-6 py-12">
 
         <div className="text-center mb-16">

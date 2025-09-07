@@ -30,17 +30,15 @@ const Contact = () => {
     const templateId = "template_i18ju09";
     const publicKey = "Q-h55re78pcIna9G1";
 
-    // FIXED: Match the parameter names with your EmailJS template
     const templateParams = {
-      name: formData.name,           // Matches {{name}} in template
-      email: formData.email,         // Matches {{email}} in template  
-      subject: formData.subject,     // Matches {{subject}} in template
-      message: formData.message,     // Matches {{message}} in template
-      reply_to: formData.email,      // For reply-to functionality
-      time: new Date().toLocaleString() // Add timestamp
+      name: formData.name,           
+      email: formData.email,         
+      subject: formData.subject,     
+      message: formData.message,     
+      reply_to: formData.email,      
+      time: new Date().toLocaleString() 
     };
 
-    // Debug: Log what we're sending
     console.log("Sending EmailJS params:", templateParams);
 
     try {
@@ -74,7 +72,7 @@ const Contact = () => {
   return (
     <div className="bg-gray-900 text-gray-100 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
+        
         <div className="text-center mb-12">
           {/* <div className="inline-flex items-center gap-2 bg-green-900/30 border border-green-800/50 text-green-300 px-3 py-1.5 rounded-full text-sm font-medium mb-6">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
@@ -89,7 +87,7 @@ const Contact = () => {
         </div>
 
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* Contact Form */}
+         
           <div className="lg:col-span-3">
             <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-6">
@@ -99,7 +97,7 @@ const Contact = () => {
                 <h2 className="text-xl font-semibold text-white">Send Message</h2>
               </div>
 
-              {/* Status Messages */}
+            
               {submitStatus === 'success' && (
                 <div className="mb-6 p-4 bg-green-900/30 border border-green-700/50 rounded-lg">
                   <div className="flex items-center gap-3">
@@ -223,7 +221,7 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Social Links */}
+            
             <div className="bg-gray-800/60 backdrop-blur-sm border border-gray-700 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
@@ -253,7 +251,7 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Response Time */}
+            
             <div className="bg-blue-900/30 border border-blue-800/50 rounded-xl p-6">
               <div className="flex items-start gap-3">
                 <svg className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,6 +266,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      
     </div>
   );
 };

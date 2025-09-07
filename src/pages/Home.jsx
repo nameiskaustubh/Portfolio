@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import profilePic from "../assets/profile.jpg";
+import { FaFileDownload, FaEye, FaEnvelope } from "react-icons/fa";
 
 // Variants for reusable animations
 const fadeUp = {
@@ -13,7 +14,7 @@ const fadeUp = {
   }),
 };
 
-// Floating star component for galaxy background
+
 const Star = ({ size, top, left, delay }) => (
   <motion.div
     className="absolute rounded-full bg-white shadow-md"
@@ -26,7 +27,7 @@ const Star = ({ size, top, left, delay }) => (
 const Home = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-blue-950 text-gray-200 overflow-hidden">
-      {/* Galaxy Stars Background */}
+    
       {[...Array(30)].map((_, i) => (
         <Star
           key={i}
@@ -37,10 +38,10 @@ const Home = () => {
         />
       ))}
 
-      {/* Hero Section */}
+    
       <section className="pt-20 pb-10 relative z-10">
         <div className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto px-6 py-20 gap-10">
-          {/* Left Text Content */}
+        
           <motion.div
             className="md:w-1/2"
             initial="hidden"
@@ -61,7 +62,7 @@ const Home = () => {
               </motion.span>
             </motion.h1>
 
-            {/* Roles */}
+           
             <motion.p
               className="text-lg text-gray-300 mb-6 h-8"
               initial={{ opacity: 0 }}
@@ -92,7 +93,7 @@ const Home = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Profile Image */}
+         
           <motion.div
             className="md:w-1/2 flex justify-center"
             initial={{ scale: 0, opacity: 0 }}
@@ -112,7 +113,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* About Section */}
+      
       <section
         id="about"
         className="py-16 px-6 relative z-10 backdrop-blur-lg"
@@ -128,9 +129,9 @@ const Home = () => {
             About Me
           </h1>
 
-          {/* Flexbox Layout for Two Scrollable Cards */}
+         
           <div className=" flex flex-col md:flex-row gap-8">
-            {/* Bio Card */}
+          
             <motion.div
   className="flex-1 bg-gray-900/80 rounded-xl p-6 shadow-lg 
              max-h-96 overflow-y-auto custom-scrollbar"
@@ -169,7 +170,7 @@ const Home = () => {
 </motion.div>
 
 
-            {/* Quick Facts Card */}
+           
             <motion.div
               className="flex-1 bg-gray-800/90 rounded-xl p-6 shadow-lg max-h-96 overflow-y-auto custom-scrollbar"
               initial={{ opacity: 0, y: 40 }}
@@ -205,7 +206,7 @@ const Home = () => {
         </motion.div>
       </section>
 
-      {/* Call-to-Action Section */}
+    
       <section className="py-16 px-6 relative z-10">
         <motion.div
           className="max-w-4xl mx-auto text-center"
@@ -236,7 +237,35 @@ const Home = () => {
             </Link>
           </div>
         </motion.div>
+        
       </section>
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
+        <div className="text-center md:text-left">
+          <h2 className="text-xl font-bold text-white">Kaustubh Deshmukh</h2>
+          <p className="text-sm text-gray-400">
+            Web Developer | Freelancer | <br />
+            ReactJs | JavaScript | NodeJs
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <a
+            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
+            download
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-xl text-sm transition-all"
+          >
+            <FaFileDownload /> Download Resume
+          </a>
+          <a
+            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-xl text-sm transition-all"
+          >
+            <FaEye /> View Resume
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
