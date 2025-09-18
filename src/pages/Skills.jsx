@@ -122,10 +122,10 @@ const Skills = () => {
     : skillsData.filter(skill => skill.category === activeCategory);
 
   const getSkillColor = (proficiency) => {
-    if (proficiency >= 80) return "from-green-500 to-emerald-500";
-    if (proficiency >= 70) return "from-blue-500 to-cyan-500";
-    if (proficiency >= 60) return "from-yellow-500 to-orange-500";
-    return "from-gray-500 to-gray-600";
+    if (proficiency >= 80) return "from-emerald-500 to-green-500";
+    if (proficiency >= 70) return "from-blue-500 to-indigo-500";
+    if (proficiency >= 60) return "from-amber-500 to-orange-500";
+    return "from-slate-500 to-gray-600";
   };
 
   const getIconColor = (name) => {
@@ -145,29 +145,35 @@ const Skills = () => {
     return colors[name] || "text-gray-400";
   };
 
+  const getCardBackground = (category) => {
+    const backgrounds = {
+      frontend: "bg-white border-gray-300",
+      backend: "bg-white border-gray-300", 
+      programming: "bg-white border-gray-300",
+      tools: "bg-white border-gray-300"
+    };
+    return backgrounds[category] || "bg-white border-gray-300";
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-gray-200 text-gray-700">
      
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/3 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-slate-300/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-300/40 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative pt-24 pb-20">
         <div className="container mx-auto px-6">
           
-          
           <div className="max-w-4xl mx-auto text-center mb-16">
-            {/* <div className="inline-flex items-center gap-3 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-full px-5 py-2 mb-8">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <span className="text-blue-400 text-sm font-medium">Technical Expertise</span>
-            </div> */}
             
-            <h1 className="text-xl md:text-4xl font-bold mb-6 text-white">
+            
+            <h1 className=" md:text-5xl font-bold mb-6 text-blue-500">
               Skills & Technologies
             </h1>
             
-            <p className="text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
               A comprehensive overview of my technical skills, experience levels, 
               and areas of expertise in software development.
             </p>
@@ -179,10 +185,10 @@ const Skills = () => {
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
                   activeCategory === category.id
-                    ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
-                    : "bg-gray-800/80 text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-700"
+                    ? "bg-gray-800 text-white shadow-lg"
+                    : "bg-white text-gray-700 hover:bg-gray-50 shadow-md border border-gray-300"
                 }`}
               >
                 {category.name}
@@ -191,41 +197,44 @@ const Skills = () => {
             ))}
           </div>
 
-         
+          
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {filteredSkills.map((skill, index) => (
               <div
                 key={index}
-                className="group bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-all duration-300 hover:-translate-y-1"
+                className={`group ${getCardBackground(skill.category)} backdrop-blur-sm border rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}
               >
+                <div className="absolute top-0 right-0 w-12 h-12 bg-gray-100 rounded-full -translate-y-6 translate-x-6 opacity-50"></div>
                
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6 relative z-10">
                   <div className="flex items-center gap-4">
-                    <div className={`text-3xl ${getIconColor(skill.name)} group-hover:scale-110 transition-transform`}>
+                    <div className={`text-3xl ${getIconColor(skill.name)} group-hover:scale-105 transition-transform duration-300`}>
                       {skill.icon}
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-white">{skill.name}</h3>
-                      <p className="text-sm text-gray-400">{skill.experience}</p>
+                      <h3 className="text-lg font-semibold text-gray-800">{skill.name}</h3>
+                      <p className="text-sm text-gray-600">{skill.experience}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-white">{skill.proficiency}%</div>
+                    <div className="text-2xl font-bold text-gray-700">
+                      {skill.proficiency}%
+                    </div>
                   </div>
                 </div>
 
-              
-                <div className="mb-4">
-                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div className="mb-4 relative z-10">
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div
                       className={`h-full bg-gradient-to-r ${getSkillColor(skill.proficiency)} transition-all duration-1000 ease-out rounded-full`}
                       style={{ width: `${skill.proficiency}%` }}
-                    ></div>
+                    >
+                    </div>
                   </div>
                 </div>
 
-               
-                <p className="text-gray-400 text-sm leading-relaxed">
+                
+                <p className="text-gray-600 text-sm leading-relaxed relative z-10">
                   {skill.description}
                 </p>
               </div>
@@ -234,37 +243,39 @@ const Skills = () => {
 
          
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-400 mb-2">3+</div>
-              <div className="text-gray-400">Years Experience</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-400 mb-2">{skillsData.length}</div>
-              <div className="text-gray-400">Technologies</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-purple-400 mb-2">
-                {Math.round(skillsData.reduce((sum, skill) => sum + skill.proficiency, 0) / skillsData.length)}%
+            {[
+              { value: "3+", label: "Years Experience", bg: "bg-white", border: "border-gray-300" },
+              { value: skillsData.length, label: "Technologies", bg: "bg-white", border: "border-gray-300" },
+              { 
+                value: Math.round(skillsData.reduce((sum, skill) => sum + skill.proficiency, 0) / skillsData.length) + "%", 
+                label: "Avg Proficiency", 
+                bg: "bg-white", 
+                border: "border-gray-300" 
+              }
+            ].map((stat, index) => (
+              <div key={index} className={`${stat.bg} ${stat.border} border rounded-xl p-6 text-center shadow-md hover:shadow-lg transition-all duration-300`}>
+                <div className="text-4xl font-bold text-gray-500 mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-gray-600 font-medium">{stat.label}</div>
               </div>
-              <div className="text-gray-400">Avg Proficiency</div>
-            </div>
+            ))}
           </div>
 
           
           <div className="grid lg:grid-cols-2 gap-8">
-            
-            
-            <div className="bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-2xl p-8">
+           
+            <div className="bg-white border border-gray-300 rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-10 h-10 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-green-100 border border-green-200 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-white">Currently Learning</h3>
+                <h3 className="text-xl font-semibold text-gray-800">Currently Learning</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
                   "Advanced React patterns and optimization",
                   "TypeScript for better type safety",
@@ -272,25 +283,24 @@ const Skills = () => {
                   "Data structures and algorithms mastery"
                 ].map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span className="text-gray-300">{item}</span>
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-gray-600">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            
-            <div className="bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-2xl p-8">
+            <div className="bg-white border border-gray-300 rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-300">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 bg-blue-100 border border-blue-200 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-white">Future Goals</h3>
+                <h3 className="text-xl font-semibold text-gray-800">Future Goals</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
                   "Cloud technologies (AWS, Azure)",
                   "DevOps and CI/CD pipelines",
@@ -298,8 +308,8 @@ const Skills = () => {
                   "Machine learning fundamentals"
                 ].map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                    <span className="text-gray-300">{item}</span>
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-gray-600">{item}</span>
                   </div>
                 ))}
               </div>

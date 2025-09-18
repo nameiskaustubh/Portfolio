@@ -3,7 +3,7 @@ import LeetCodeTracker from "../components/LeetCodeTracker";
 
 const LeetCode = () => {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-gray-200 text-gray-100">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/3 rounded-full blur-3xl"></div>
@@ -13,16 +13,11 @@ const LeetCode = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             
-            {/* <div className="inline-flex items-center gap-3 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-full px-5 py-2 mb-8">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-sm font-medium">Currently Learning</span>
-            </div> */}
-            
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
+            <h1 className=" md:text-4xl font-bold mb-6 text-blue-600">
               LeetCode Progress
             </h1>
             
-            <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl text-gray-500 mb-12 leading-relaxed max-w-2xl mx-auto">
               Systematic approach to mastering data structures and algorithms through 
               consistent practice and strategic problem-solving.
             </p>
