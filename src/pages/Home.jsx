@@ -3,7 +3,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import profilePic from "../assets/profile.jpg";
 import { FaFileDownload, FaEye, FaEnvelope } from "react-icons/fa";
-
+import About from "../components/About";
+import Skills from"../pages/Skills";
+import ProjectsSection from '../pages/ProjectsSection';
+import LeetCode from "./Leetcode";
+import Services from "./Services";
+import Contact  from './Contact';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -237,7 +242,24 @@ const Home = () => {
             </Link>
           </div>
         </motion.div>
+        <> 
+        <About/>
+        <hr />
+        <Skills/>
+        <hr />
+        <ProjectsSection/>
+        <hr />
+        <LeetCode/>
+        <hr />
+        <Services/>
+        <hr />
+        <Contact/>
         
+        </>
+
+
+
+
       </section>
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
         <div className="text-center md:text-left">
@@ -264,8 +286,10 @@ const Home = () => {
           >
             <FaEye /> View Resume
           </a>
+      
         </div>
       </div>
+      
     </div>
   );
 };
