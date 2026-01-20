@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import profileImg from "../assets/profile.jpg";
+
 
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const [inView, setInView] = useState(false);
@@ -131,7 +133,7 @@ const Home = () => {
             >
               <div className="w-72 h-72 border border-slate-300 bg-white shadow-sm">
                 <img
-                  src="/src/assets/profile.jpg"
+                  src={profileImg}
                   alt="Kaustubh Deshmukh"
                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500"
                   onError={(e) => {
