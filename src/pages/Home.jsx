@@ -1,295 +1,403 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import profilePic from "../assets/profile.jpg";
-import { FaFileDownload, FaEye, FaEnvelope } from "react-icons/fa";
-import About from "../components/About";
-import Skills from"../pages/Skills";
-import ProjectsSection from '../pages/ProjectsSection';
-import LeetCode from "./Leetcode";
-import Services from "./Services";
-import Contact  from './Contact';
+import React, { useEffect, useState } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+
+const AnimatedCounter = ({ value, suffix = "" }) => {
+  const [inView, setInView] = useState(false);
+  const digits = value.toString().split('');
+
+  return (
+    <motion.div
+      className="inline-flex items-center overflow-hidden"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.5 }}
+      onViewportEnter={() => setInView(true)}
+    >
+      {digits.map((digit, idx) => (
+        <div key={idx} className="inline-block overflow-hidden h-10" style={{ width: '1.2ch' }}>
+          <motion.div
+            initial={{ y: 0 }}
+            animate={inView ? { y: -parseInt(digit) * 40 } : { y: 0 }}
+            transition={{
+              duration: 2,
+              ease: [0.22, 1, 0.36, 1],
+              delay: idx * 0.05
+            }}
+          >
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+              <div key={num} className="h-10 flex items-center justify-center">
+                {num}
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      ))}
+      {suffix && <span className="ml-0.5">{suffix}</span>}
+    </motion.div>
+  );
+};
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i = 1) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.2, duration: 0.6, ease: "easeOut" },
-  }),
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  })
 };
-
-
-const Star = ({ size, top, left, delay }) => (
-  <motion.div
-    className="absolute rounded-full bg-white shadow-md"
-    style={{ width: size, height: size, top, left }}
-    animate={{ opacity: [0.2, 1, 0.2], scale: [1, 1.3, 1] }}
-    transition={{ duration: 3, repeat: Infinity, delay }}
-  />
-);
 
 const Home = () => {
   return (
-    <div className="relative min-h-screen bg-gray-200 text-gray-800 overflow-hidden">
+    <div className="min-h-screen bg-white">
     
-      {[...Array(30)].map((_, i) => (
-        <Star
-          key={i}
-          size={`${Math.random() * 3 + 1.5}px`}
-          top={`${Math.random() * 100}%`}
-          left={`${Math.random() * 100}%`}
-          delay={Math.random() * 5}
-        />
-      ))}
+      <section className="pt-32 pb-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
 
-    
-      <section className="pt-20 pb-10 relative z-10">
-        <div className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl mx-auto px-6 py-20 gap-10">
-        
+            <motion.div
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div
+                variants={fadeUp}
+                className="mb-6"
+              >
+                <div className="inline-flex items-center gap-2 text-sm text-slate-600">
+                  <span>Assistant Professor</span>
+                  <span className="text-slate-300">•</span>
+                  <span>Software Engineer</span>
+                </div>
+              </motion.div>
+
+              <motion.h1
+                className="text-5xl md:text-6xl font-semibold text-slate-900 mb-6 leading-tight"
+                variants={fadeUp}
+                custom={1}
+              >
+               Kaustubh Deshmukh
+              </motion.h1>
+
+              <motion.p
+                className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl"
+                variants={fadeUp}
+                custom={2}
+              >
+                I teach programming fundamentals, coordinate student projects, and build production systems. My work bridges academic responsibility with engineering judgment.
+              </motion.p>
+              
+              <motion.div
+                className="flex flex-col gap-2 text-sm text-slate-600 mb-10"
+                variants={fadeUp}
+                custom={3}
+              >
+                <div>R.H. Sapat College of Engineering, Management Studies & Research</div>
+                <div>MCA Project Coordinator • C and Python Instructor</div>
+              </motion.div>
+
+              <motion.div
+                className="flex flex-wrap gap-3"
+                variants={fadeUp}
+                custom={4}
+              >
+                <a
+                  href="work"
+                  className="px-5 py-2.5 bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  View Work
+                </a>
+                <a
+                  href="contact"
+                  className="px-5 py-2.5 border border-slate-300 text-slate-700 text-sm font-medium hover:border-slate-400 transition-colors"
+                >
+                  Contact
+                </a>
+                <a
+                  href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors"
+                >
+                  Resume →
+                </a>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="relative"
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              custom={5}
+            >
+              <div className="w-72 h-72 border border-slate-300 bg-white shadow-sm">
+                <img
+                  src="/src/assets/profile.jpg"
+                  alt="Kaustubh Deshmukh"
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = `
+                      <div class="w-full h-full flex items-center justify-center bg-slate-50">
+                        <div class="text-center">
+                          <div class="w-20 h-20 bg-slate-200 rounded-full mx-auto mb-3 flex items-center justify-center text-slate-600 text-2xl font-semibold">
+                            KD
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 px-6 border-t border-slate-200">
+        <div className="max-w-6xl mx-auto">
           <motion.div
-            className="md:w-1/2"
+            className="grid grid-cols-2 md:grid-cols-3 gap-8"
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
             variants={fadeUp}
           >
-            <motion.h1
-              className="text-4xl md:text-5xl font-bold mb-4"
-              variants={fadeUp}
-            >
-              Hi, I'm{" "}
-              <motion.span
-                className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 4, repeat: Infinity }}
+            {[
+              { number: 100, suffix: "+", label: "Students instructed" },
+              { number: 10, suffix: "+", label: "Projects coordinated" },
+              { number: 2, suffix: "", label: "Core courses taught" }
+            ].map((stat, idx) => (
+              <motion.div 
+                key={idx}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeUp}
+                custom={idx}
               >
-                Kaustubh
-              </motion.span>
-            </motion.h1>
-
-           
-            <motion.p
-              className="text-lg text-gray-700 mb-6 h-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              <motion.span
-                animate={{ x: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-                React Developer | Web Developer | Freelancer
-              </motion.span>
-            </motion.p>
-
-            <motion.div className="flex gap-4" variants={fadeUp} custom={3}>
-              <Link
-                to="/projects"
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-blue-700 transition"
-              >
-                See My Work
-              </Link>
-              <a
-                href="#about"
-                className="inline-block border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition"
-              >
-                Learn More
-              </a>
-            </motion.div>
+                <div className="text-3xl font-semibold text-slate-900 mb-1">
+                  <AnimatedCounter value={stat.number} suffix={stat.suffix} />
+                </div>
+                <div className="text-sm text-slate-500">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
+        </div>
+      </section>
 
-         
+      {/* How I Think */}
+      <section className="py-20 px-6 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
           <motion.div
-            className="md:w-1/2 flex justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
           >
-            <motion.img
-              src={profilePic}
-              alt="Kaustubh Profile"
-              className="w-64 h-64 rounded-full object-cover shadow-lg border-2 border-blue-600"
-              animate={{
-                y: [0, -15, 0],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
+            <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-12">
+              How I Think
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-12">
+              {[
+                {
+                  principle: "Teaching builds thinking",
+                  explanation: "Programming instruction means teaching problem decomposition and logic, not just syntax. I prepare students for systems they haven't encountered yet."
+                },
+                {
+                  principle: "Projects require judgment",
+                  explanation: "Coordinating student work means evaluating feasibility and learning outcomes. Good projects teach when to simplify, when to architect, and when to deliver."
+                },
+                {
+                  principle: "Systems outlive intentions",
+                  explanation: "Production work requires different decisions than prototypes. I build for the people who inherit the code and maintain the architecture."
+                }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                  variants={fadeUp}
+                  custom={idx}
+                >
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    {item.principle}
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    {item.explanation}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
 
-      
-      <section
-        id="about"
-        className="py-16 px-6 relative z-10 backdrop-blur-lg"
-      >
-        <motion.div
-          className="max-w-6xl mx-auto"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
-        >
-          <h1 className="text-4xl font-bold mb-10 text-center text-blue-500 ">
-            About Me
-          </h1>
-
-         
-          <div className=" flex flex-col md:flex-row gap-8">
-          
-            <motion.div
-  className="flex-1 bg-gray-300/80 rounded-xl p-6 shadow-lg 
-             max-h-96 overflow-y-auto custom-scrollbar"
-  initial={{ opacity: 0, y: 40 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8 }}
->
-  <h1 className="text-2xl font-bold mb-4 text-blue-500">
-    Professional Bio
-  </h1>
-
-  <p className="text-2xl text-gray-500 leading-relaxed mb-3">
-    I am a <span className="text-indigo-400 font-medium">React & Web Developer</span>, 
-    focused on building scalable, maintainable, and user-centered applications. 
-    My approach emphasizes clean design, performance optimization, and accessibility.
-  </p>
-    <br />
-  <p className="text-2xl text-gray-500 leading-relaxed mb-3">
-    With hands-on experience in JavaScript, React, and TailwindCSS, 
-    I specialize in creating responsive interfaces and seamless user experiences. 
-    My goal is to translate complex problems into intuitive, functional solutions.
-  </p>
-  <br />
-
-  <p className="text-gray-500
-  text-2xl -gray-300 leading-relaxed mb-3">
-    Beyond coding, I enjoy collaborating with developers and contributing 
-    to projects that make a real impact. I'm continuously improving my skills 
-    in <span className="text-indigo-500 font-medium">frontend engineering, DSA, and system design</span>.
-  </p>
-<br />
-  <p className="text-2xl text-gray-500 leading-relaxed">
-    Currently, I’m open to freelance projects, and opportunities 
-    where I can apply my skills and grow with challenging problems.
-  </p>
-</motion.div>
-
-
-           
-            <motion.div
-              className="flex-1 bg-blue-500/100 rounded-xl p-6 shadow-lg max-h-96 overflow-y-auto custom-scrollbar"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <h3 className="text-xl font-semibold mb-4 text-gray-100">
-                Quick Facts
-              </h3>
-              <ul className=" space-y-3 text-2xl text-gray-200">
-                {[
-                  "Based in Nashik, Maharashtra",
-                  "MCA Graduate (2025)",
-                  "Frontend Developer specializing in React",
-                  "Strong interest in DSA & problem-solving",
-                  "Exploring system design & scalable apps",
-                  "Open to freelance and collaborative projects",
-                ].map((fact, i) => (
-                  <motion.li
-                    key={i}
-                    className="flex items-center"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.2 }}
-                  >
-                    <span className="w-2 h-2 bg-blue-100 rounded-full mr-3"></span>
-                    {fact}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          </div>
-        </motion.div>
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+          >
+            <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-12">
+              What I Do
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: "Teaching",
+                  items: [
+                    "C Programming fundamentals",
+                    "Python problem-solving",
+                    "First-year engineering instruction"
+                  ]
+                },
+                {
+                  title: "Coordination",
+                  items: [
+                    "MCA project oversight",
+                    "Industry internship guidance",
+                    "Technical mentorship"
+                  ]
+                },
+                {
+                  title: "Engineering",
+                  items: [
+                    "Web application development",
+                    "System architecture decisions",
+                    "Production maintenance"
+                  ]
+                }
+              ].map((section, idx) => (
+                <motion.div
+                  key={idx}
+                  className="border-t border-slate-200 pt-6"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                  variants={fadeUp}
+                  custom={idx}
+                >
+                  <h3 className="text-base font-semibold text-slate-900 mb-4">
+                    {section.title}
+                  </h3>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    {section.items.map((item, i) => (
+                      <div key={i}>{item}</div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </section>
 
-    
-      <section className="py-16 px-6 relative z-10">
-        <motion.div
-          className="max-w-4xl mx-auto text-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
-        >
-          <h2 className="text-3xl font-bold mb-6 text-blue-400">
-            Let's Build Something Amazing Together
-          </h2>
-          <p className="text-lg text-gray-600 mb-8">
-            I’m always excited to work on new projects and collaborate with
-            developers and teams to create impactful digital products.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to="/projects"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              View My Projects
-            </Link>
-            <Link
-              to="/skills"
-              className="bg-gray-700 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors"
-            >
-              Explore My Skills
-            </Link>
-          </div>
-        </motion.div>
-        <> 
-        <About/>
-        <hr />
-        <Skills/>
-        <hr />
-        <ProjectsSection/>
-        <hr />
-        <LeetCode/>
-        <hr />
-        <Services/>
-        <hr />
-        <Contact/>
-        
-        </>
-
-
-
-
+      <section className="py-20 px-6 bg-slate-900 text-white">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+          >
+            <p className="text-2xl md:text-3xl font-light leading-relaxed">
+              I prepare students for industry problems, evaluate project complexity, and make technical decisions that outlast implementation. This requires understanding constraints, consequences, and what matters beyond delivery.
+            </p>
+          </motion.div>
+        </div>
       </section>
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
-        <div className="text-center md:text-left">
-          <h2 className="text-xl font-bold text-gray-700">Kaustubh Deshmukh</h2>
-          <p className="text-sm text-gray-500 ">
-            Web Developer | Freelancer | <br />
-            ReactJs | JavaScript | NodeJs
-          </p>
-        </div>
 
-        <div className="flex gap-3">
-          <a
-            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
-            download
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-xl text-sm transition-all"
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
           >
-            <FaFileDownload /> Download Resume
-          </a>
-          <a
-            href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-xl text-sm transition-all"
-          >
-            <FaEye /> View Resume
-          </a>
-      
+            <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-12">
+              Technical Foundation
+            </h2>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                {
+                  area: "Languages",
+                  skills: ["C", "C++", "JavaScript", "Python","SQL"]
+                },
+                {
+                  area: "Frontend",
+                  skills: ["React", "Tailwind CSS","Bootstrap", "Component Architecture", "State Management"]
+                },
+                {
+                  area: "Backend & Data",
+                  skills: ["Node.js", "Express", "MongoDB","MySQL", "API Design"]
+                },
+                {
+                  area: "Practice",
+                  skills: ["Data Structures", "Algorithms", "System Design", "Code Review"]
+                }
+              ].map((capability, idx) => (
+                <motion.div
+                  key={idx}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, amount: 0.3 }}
+                  variants={fadeUp}
+                  custom={idx}
+                >
+                  <h3 className="font-semibold text-slate-900 mb-3">{capability.area}</h3>
+                  <div className="space-y-1.5 text-sm text-slate-600">
+                    {capability.skills.map((skill, i) => (
+                      <div key={i}>{skill}</div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-      </div>
-      
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-20 px-6 border-t border-slate-200">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+          >
+            <h2 className="text-2xl font-semibold text-slate-900 mb-4">
+              Open to appropriate collaboration
+            </h2>
+            <p className="text-base text-slate-600 mb-8 max-w-2xl mx-auto">
+              Academic partnerships, technical work, and mentorship that aligns with teaching, project coordination, or production engineering.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <a
+                href="contact"
+                className="px-6 py-3 bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors"
+              >
+                Get in Touch
+              </a>
+              <a
+                href="work"
+                className="px-6 py-3 border border-slate-300 text-slate-700 text-sm font-medium hover:border-slate-400 transition-colors"
+              >
+                View Work
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 };

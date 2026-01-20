@@ -1,18 +1,96 @@
-import React, { useState } from "react";
-import { FaLinkedin, FaGithub, FaInstagram, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
-import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
-import emailjs from "@emailjs/browser";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  })
+};
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: ""
+    name: '',
+    email: '',
+    organization: '',
+    inquiry: '',
+    message: ''
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); 
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const appropriateInquiries = [
+    {
+      category: "Academic Collaboration",
+      examples: "Curriculum development, guest lectures, technical workshops"
+    },
+    {
+      category: "Technical Work",
+      examples: "Web application development, architecture review, code assessment"
+    },
+    {
+      category: "Student Mentorship",
+      examples: "Industry guidance for student teams, project evaluation"
+    },
+    {
+      category: "Professional Guidance",
+      examples: "Career mentorship, technical decision consultation"
+    }
+  ];
+
+  const contactInfo = [
+    {
+      label: "Email",
+      value: "kaustubhvdeshmukh2001@gmail.com",
+      link: "mailto:kaustubhvdeshmukh2001@gmail.com",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    {
+      label: "Institution",
+      value: "R.H. Sapat College of Engineering, Nashik",
+      link: null,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      )
+    },
+    {
+      label: "Location",
+      value: "Nashik, Maharashtra, India",
+      link: null,
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      )
+    }
+  ];
+
+  const professionalLinks = [
+    {
+      platform: "LinkedIn",
+      url: "https://linkedin.com/in/kaustubh-deshmukh8851",
+      purpose: "Professional networking"
+    },
+    {
+      platform: "GitHub",
+      url: "https://github.com/nameiskaustubh",
+      purpose: "Code repositories"
+    },
+    {
+      platform: "LeetCode",
+      url: "https://leetcode.com/afcpwRGndV",
+      purpose: "Problem-solving practice"
+    }
+  ];
 
   const handleInputChange = (e) => {
     setFormData({
@@ -21,7 +99,7 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
@@ -31,185 +109,242 @@ const Contact = () => {
     const publicKey = "Q-h55re78pcIna9G1";
 
     const templateParams = {
-      name: formData.name,           
-      email: formData.email,         
-      subject: formData.subject,     
-      message: formData.message,     
-      reply_to: formData.email,      
-      time: new Date().toLocaleString() 
+      name: formData.name,
+      email: formData.email,
+      organization: formData.organization,
+      inquiry: formData.inquiry,
+      message: formData.message,
+      reply_to: formData.email,
+      time: new Date().toLocaleString()
     };
 
-    console.log("Sending EmailJS params:", templateParams);
-
-    try {
-      const result = await emailjs.send(serviceId, templateId, templateParams, publicKey);
-      console.log("EmailJS result:", result.status, result.text);
-      setSubmitStatus('success');
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error) {
-      console.error("EmailJS error:", error);
+    const emailjs = window.emailjs;
+    if (!emailjs) {
       setSubmitStatus('error');
-    } finally {
       setIsSubmitting(false);
+      return;
     }
+    
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then(() => {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', organization: '', inquiry: '', message: '' });
+      })
+      .catch((error) => {
+        console.error('Email error:', error);
+        setSubmitStatus('error');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
-  const socialLinks = [
-    { name: "LinkedIn", url: "https://linkedin.com/in/kaustubh-deshmukh8851", icon: <FaLinkedin />, color: "hover:text-blue-600", description: "Professional Network" },
-    { name: "GitHub", url: "https://github.com/nameiskaustubh", icon: <FaGithub />, color: "hover:text-gray-800", description: "Code Repository" },
-    { name: "LeetCode", url: "https://leetcode.com/afcpwRGndV", icon: <SiLeetcode />, color: "hover:text-yellow-600", description: "Coding Practice" },
-    { name: "GeeksforGeeks", url: "https://auth.geeksforgeeks.org/user/kaustubhvde2feq", icon: <SiGeeksforgeeks />, color: "hover:text-green-600", description: "Programming Platform" },
-    { name: "Instagram", url: "https://instagram.com/nameiskaustubh", icon: <FaInstagram />, color: "hover:text-pink-600", description: "Personal Updates" },
-    { name: "Email", url: "https://mail.google.com/mail/?view=cm&fs=1&to=kaustubhvdeshmukh2001@gmail.com", icon: <FaEnvelope />, color: "hover:text-red-600", description: "Direct Contact" }
-  ];
-
-  const contactInfo = [
-    { icon: <FaEnvelope />, title: "Email", value: "kaustubhvdeshmukh2001@gmail.com", link: "mailto:kaustubhvdeshmukh2001@gmail.com" },
-    { icon: <FaMapMarkerAlt />, title: "Location", value: "Nashik, Maharashtra, India", link: null },
-    { icon: <FaPhone />, title: "Phone", value: "+91-7775864001", link: null }
-  ];
-
   return (
-    <div className="bg-gray-200 min-h-screen py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white pt-32 pb-20">
+      <div className="max-w-6xl mx-auto px-6">
         
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mt-5 text-blue-500 mb-4">
-            Let's Work Together
+        {/* Header */}
+        <motion.div
+          className="mb-20"
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+        >
+          <h1 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
+            Contact
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have a project in mind? I'd love to hear about it. Drop me a message and let's create something amazing.
+          <p className="text-3xl md:text-4xl text-slate-900 font-light max-w-4xl">
+            For academic collaboration, technical work, or mentorship aligned with teaching, project coordination, or production engineering.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-         
-          <div className="lg:col-span-3">
-            <div className="bg-white shadow-lg border border-gray-300 rounded-xl p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FaEnvelope className="w-4 h-4 text-blue-500" />
-                </div>
-                <h2 className="text-xl font-semibold text-gray-800">Send Message</h2>
-              </div>
-
-            
-              {submitStatus === 'success' && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-green-700 text-sm">Message sent successfully! I'll get back to you soon.</p>
-                  </div>
-                </div>
-              )}
-
-              {submitStatus === 'error' && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <p className="text-red-700 text-sm">Failed to send message. Please try again or contact me directly.</p>
-                  </div>
-                </div>
-              )}
-
-              <div onSubmit={handleSubmit} as="form">
-                <div className="space-y-5">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                      <input 
-                        type="text" 
-                        name="name" 
-                        value={formData.name} 
-                        onChange={handleInputChange} 
-                        required 
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all" 
-                        placeholder="Your full name" 
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                      <input 
-                        type="email" 
-                        name="email" 
-                        value={formData.email} 
-                        onChange={handleInputChange} 
-                        required 
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all" 
-                        placeholder="your.email@example.com" 
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                    <input 
-                      type="text" 
-                      name="subject" 
-                      value={formData.subject} 
-                      onChange={handleInputChange} 
-                      required 
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all" 
-                      placeholder="What's this about?" 
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                    <textarea 
-                      name="message" 
-                      value={formData.message} 
-                      onChange={handleInputChange} 
-                      required 
-                      rows={4} 
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all resize-none" 
-                      placeholder="Tell me about your project or opportunity..." 
-                    />
-                  </div>
-
-                  <button 
-                    type="submit" 
-                    disabled={isSubmitting} 
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center justify-center">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                        Sending...
-                      </div>
-                    ) : "Send Message"}
-                  </button>
-                </div>
-              </div>
-            </div>
+        {/* Appropriate Inquiries */}
+        <motion.section
+          className="mb-20"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
+            Appropriate Inquiries
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {appropriateInquiries.map((type, idx) => (
+              <motion.div
+                key={idx}
+                className="border-l-2 border-slate-200 pl-6 py-2"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeUp}
+                custom={idx}
+              >
+                <h3 className="text-base font-semibold text-slate-900 mb-2">
+                  {type.category}
+                </h3>
+                <p className="text-sm text-slate-600">
+                  {type.examples}
+                </p>
+              </motion.div>
+            ))}
           </div>
+        </motion.section>
 
-          {/* Contact Info & Social Links */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Contact Information */}
-            <div className="bg-white shadow-lg border border-gray-300 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <FaPhone className="w-4 h-4 text-green-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">Contact Info</h3>
+        {/* Contact Form & Info Grid */}
+        <div className="grid lg:grid-cols-5 gap-12 mb-20">
+          
+          {/* Contact Form */}
+          <motion.div
+            className="lg:col-span-3"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+          >
+            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
+              Send Message
+            </h2>
+
+            {submitStatus === 'success' && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-sm">
+                  Message sent. I'll respond within 24-48 hours.
+                </p>
               </div>
+            )}
+
+            {submitStatus === 'error' && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm">
+                  Failed to send. Please email directly at kaustubhvdeshmukh2001@gmail.com
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Organization
+                </label>
+                <input
+                  type="text"
+                  name="organization"
+                  value={formData.organization}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
+                  placeholder="Institution or company"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Inquiry Type
+                </label>
+                <select
+                  name="inquiry"
+                  value={formData.inquiry}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:border-slate-400 focus:outline-none transition-colors"
+                >
+                  <option value="">Select type</option>
+                  <option value="academic">Academic Collaboration</option>
+                  <option value="technical">Technical Work</option>
+                  <option value="student">Student Mentorship</option>
+                  <option value="guidance">Professional Guidance</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  rows={6}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors resize-none"
+                  placeholder="Describe your inquiry..."
+                />
+              </div>
+
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="w-full bg-slate-900 text-white font-medium py-3 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Sending...' : 'Send Message'}
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Contact Info Sidebar */}
+          <motion.div
+            className="lg:col-span-2 space-y-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+            custom={1}
+          >
+            {/* Direct Contact */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
+                Direct Contact
+              </h3>
               <div className="space-y-4">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-5 h-5 text-gray-600 mt-0.5 flex-shrink-0">
+                {contactInfo.map((info, idx) => (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="text-slate-600 mt-0.5">
                       {info.icon}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-800">{info.title}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-slate-900 mb-1">
+                        {info.label}
+                      </div>
                       {info.link ? (
-                        <a href={info.link} className="text-sm text-blue-500 hover:text-blue-600 break-all transition-colors">{info.value}</a>
+                        <a
+                          href={info.link}
+                          className="text-sm text-slate-600 hover:text-slate-900 transition-colors break-all"
+                        >
+                          {info.value}
+                        </a>
                       ) : (
-                        <p className="text-sm text-gray-600 break-words">{info.value}</p>
+                        <div className="text-sm text-slate-600">
+                          {info.value}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -217,52 +352,48 @@ const Contact = () => {
               </div>
             </div>
 
-            
-            <div className="bg-white shadow-lg border border-gray-300 rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">Connect</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {socialLinks.map((social, index) => (
-                  <a 
-                    key={index} 
-                    href={social.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-100 hover:shadow-md transition-all group"
+            {/* Professional Links */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
+                Professional Profiles
+              </h3>
+              <div className="space-y-3">
+                {professionalLinks.map((link, idx) => (
+                  <a
+                    key={idx}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group"
                   >
-                    <div className={`text-lg text-gray-600 transition-colors ${social.color} flex-shrink-0`}>
-                      {social.icon}
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-slate-900 group-hover:text-slate-700">
+                        {link.platform}
+                      </span>
+                      <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-800 truncate group-hover:text-gray-900 transition-colors">{social.name}</p>
-                    </div>
+                    <p className="text-sm text-slate-600">
+                      {link.purpose}
+                    </p>
                   </a>
                 ))}
               </div>
             </div>
 
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-sm font-medium text-blue-800 mb-1">Quick Response</h4>
-                  <p className="text-sm text-blue-700">I typically respond within 24 hours. For urgent matters, connect via LinkedIn.</p>
-                </div>
-              </div>
+            {/* Response Time */}
+            <div className="p-6 bg-slate-50 rounded-xl border border-slate-200">
+              <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                Response Time
+              </h3>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                Typical response within 24-48 hours. For urgent academic matters, mention the timeline in your message.
+              </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-      
     </div>
   );
 };
