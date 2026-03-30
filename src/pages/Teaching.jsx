@@ -1,377 +1,739 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+/**
+ * Teaching.jsx — Animated Journey Timeline
+ * 
+ * Features:
+ * - GSAP-driven vertical timeline with progress line
+ * - Scroll-triggered timeline nodes
+ * - Stats counters
+ * - Course cards with expandable content
+ */
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
-  })
-};
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 
-const Teaching = () => {
-  const courses = [
-    {
-      code: "FPL",
-      name: "Fundamentals of Programming Language",
-      language: "C Programming",
-      level: "First-Year Engineering",
-      topics: [
-        "Programming fundamentals and problem decomposition",
-        "Variables, operators, and control structures",
-        "Functions, arrays, and pointers",
-        "Memory management and data structures",
-        "File handling and modular programming"
-      ],
-      approach: "Emphasis on logical thinking and algorithmic problem-solving. Students build foundations for systems programming and computer science concepts.",
-      outcomes: [
-        "Write structured, efficient C programs",
-        "Understand memory allocation and pointers",
-        "Debug and optimize code systematically",
-        "Apply programming concepts to solve real problems"
-      ]
-    },
-    {
-      code: "PPS",
-      name: "Programming and Problem Solving",
-      language: "Python",
-      level: "First-Year Engineering",
-      topics: [
-        "Python syntax and data types",
-        "Control flow and iteration",
-        "Functions and modular programming",
-        "Data structures (lists, dictionaries, sets)",
-        "Object-oriented programming concepts",
-        "File I/O and exception handling"
-      ],
-      approach: "Focus on practical problem-solving with clean, readable code. Students learn to translate problems into algorithmic solutions using Python's expressive syntax.",
-      outcomes: [
-        "Develop solutions using Python's core libraries",
-        "Write maintainable, documented code",
-        "Apply OOP principles appropriately",
-        "Solve computational problems independently"
-      ]
-    }
-  ];
+gsap.registerPlugin(ScrollTrigger);
 
-  const responsibilities = [
-    {
-      title: "MCA Major Project Coordinator",
-      description: "Oversee final-year MCA students through complete project lifecycle, from ideation to deployment.",
-      activities: [
-        "Guide teams through requirements analysis and system design",
-        "Review architectural decisions and technology choices",
-        "Conduct code reviews and technical evaluations",
-        "Mentor on industry best practices and standards",
-        "Coordinate project presentations and demonstrations"
-      ],
-      impact: "Ensuring students deliver production-ready projects that demonstrate industry-relevant skills and engineering maturity."
-    },
-    {
-      title: "Industrial Internship Coordination",
-      description: "Facilitate industry connections and prepare MCA students for professional engineering environments.",
-      activities: [
-        "Connect students with technology companies",
-        "Prepare students for technical interviews",
-        "Monitor internship progress and learning outcomes",
-        "Bridge academic concepts with industry practices",
-        "Evaluate internship work and provide feedback"
-      ],
-      impact: "Bridging the academic-industry gap by ensuring students gain real-world exposure and professional readiness."
-    }
-  ];
+const courses = [
+  {
+    code: 'PPS',
+    name: 'Programming & Problem Solving',
+    language: 'Python',
+    level: 'First-Year MCA',
+    accentColor: 'var(--accent)',
+    topics: [
+      'Python syntax, data types & operators',
+      'Control flow, iteration, comprehensions',
+      'Functions, recursion & modular design',
+      'Lists, dicts, sets & tuples',
+      'OOP — classes, inheritance, polymorphism',
+      'File I/O & exception handling',
+    ],
+    approach:
+      'Focus on practical problem-solving with clean, readable code. Students learn to translate problems into algorithmic solutions using Python\'s expressive syntax.',
+    outcomes: [
+      'Develop solutions using Python core libraries',
+      'Write maintainable, documented code',
+      'Apply OOP principles appropriately',
+      'Solve computational problems independently',
+    ],
+  },
+  {
+    code: 'CC',
+    name: 'Cloud Computing',
+    language: 'Concepts + AWS/GCP',
+    level: 'Second-Year MCA',
+    accentColor: 'var(--accent-cyan)',
+    topics: [
+      'Cloud service models — IaaS, PaaS, SaaS',
+      'Virtualization & containerization',
+      'AWS and GCP services overview',
+      'Distributed systems fundamentals',
+      'Cloud security and compliance',
+      'Deployment and scaling strategies',
+    ],
+    approach:
+      'Bridging conceptual cloud architecture with practical service usage. Students gain exposure to real cloud environments through guided labs.',
+    outcomes: [
+      'Understand cloud service trade-offs',
+      'Deploy applications to cloud platforms',
+      'Articulate security and cost considerations',
+      'Design scalable distributed architectures',
+    ],
+  },
+];
 
-  const teachingPhilosophy = {
-    principles: [
-      {
-        title: "Industry Readiness",
-        description: "Teaching extends beyond syntax. Students learn how professional engineers think, debug, and build systems that scale."
-      },
-      {
-        title: "Logical Rigor",
-        description: "Programming is taught as a discipline of clear thinking. Every concept builds toward systematic problem decomposition."
-      },
-      {
-        title: "Practical Application",
-        description: "Theory meets practice. Students work on problems that mirror real engineering challenges they'll face in industry."
-      },
-      {
-        title: "Mentorship Focus",
-        description: "Education is a long-term investment. I guide students not just through courses, but toward career trajectories in technology."
-      }
-    ]
-  };
+const responsibilities = [
+  {
+    title: 'MCA Major Project Coordinator',
+    icon: '◈',
+    color: 'var(--accent)',
+    description:
+      'Oversee final-year MCA students through complete project lifecycle — from ideation to deployment.',
+    activities: [
+      'Guide teams through requirements analysis and system design',
+      'Review architectural decisions and technology choices',
+      'Conduct code reviews and technical evaluations',
+      'Coordinate project presentations and demonstrations',
+    ],
+  },
+  {
+    title: 'Class Coordinator — SY MCA',
+    icon: '◉',
+    color: 'var(--accent-warm)',
+    description:
+      'Administrative and academic coordination for the Second Year MCA batch.',
+    activities: [
+      'Academic scheduling and timetable coordination',
+      'Student grievance handling and counseling',
+      'Internal assessment management',
+      'Industry visit and workshop organization',
+    ],
+  },
+  {
+    title: 'Industrial Internship Coordination',
+    icon: '◎',
+    color: 'var(--accent-cyan)',
+    description:
+      'Facilitate industry connections and prepare MCA students for professional engineering environments.',
+    activities: [
+      'Connect students with technology companies',
+      'Prepare students for technical interviews',
+      'Monitor internship progress and learning outcomes',
+      'Bridge academic concepts with industry practices',
+    ],
+  },
+];
 
-  const studentImpact = {
-    metrics: [
-      { value: "100+", label: "Students Taught Annually" },
-      { value: "10+", label: "Major Projects Coordinated" },
-      // { value: "15+", label: "Industry Internships Facilitated" },
-      { value: "2", label: "Core Courses" }
-    ]
-  };
+/* ---- Timeline node ---- */
+const TimelineNode = ({ item, index }) => {
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-20">
-      <div className="max-w-6xl mx-auto px-6">
-        
+    <motion.div
+      initial={{ opacity: 0, x: -30 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
+      style={{ display: 'flex', gap: '2rem', position: 'relative', zIndex: 1 }}
+    >
+      {/* Node */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+        <div
+          style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: 'var(--bg-0)',
+            border: `2px solid ${item.color}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.2rem',
+            color: item.color,
+            flexShrink: 0,
+            boxShadow: `0 0 20px ${item.color}30`,
+          }}
+        >
+          {item.icon}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div
+        style={{
+          flex: 1,
+          paddingBottom: '3rem',
+          background: 'var(--bg-1)',
+          border: '1px solid var(--border)',
+          borderRadius: '16px',
+          padding: '1.75rem',
+          transition: 'border-color 0.3s ease',
+          cursor: 'pointer',
+        }}
+        onClick={() => setExpanded((e) => !e)}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = item.color + '40')}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '1rem',
+          }}
+        >
+          <h3
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              color: 'var(--text-1)',
+              marginBottom: '0.5rem',
+            }}
+          >
+            {item.title}
+          </h3>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              color: 'var(--text-3)',
+              transition: 'transform 0.3s ease',
+              transform: expanded ? 'rotate(45deg)' : 'none',
+              flexShrink: 0,
+            }}
+          >
+            +
+          </span>
+        </div>
+
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.875rem',
+            color: 'var(--text-3)',
+            lineHeight: 1.6,
+          }}
+        >
+          {item.description}
+        </p>
+
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              style={{ overflow: 'hidden' }}
+            >
+              <ul style={{ listStyle: 'none', marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+                {item.activities.map((act, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      gap: '0.6rem',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.82rem',
+                      color: 'var(--text-3)',
+                      marginBottom: '0.5rem',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <span style={{ color: item.color, flexShrink: 0 }}>→</span>
+                    {act}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
+/* ---- Course card ---- */
+const CourseCard = ({ course, index }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.7, delay: index * 0.15 }}
+      style={{
+        background: 'var(--bg-1)',
+        border: '1px solid var(--border)',
+        borderRadius: '20px',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Card header */}
+      <div
+        onClick={() => setExpanded((e) => !e)}
+        style={{
+          padding: '2rem',
+          cursor: 'pointer',
+          borderBottom: expanded ? '1px solid var(--border)' : 'none',
+          transition: 'background 0.2s ease',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-2)')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.65rem',
+                  letterSpacing: '0.15em',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '100px',
+                  background: `${course.accentColor}20`,
+                  color: course.accentColor,
+                  border: `1px solid ${course.accentColor}40`,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {course.code}
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.65rem',
+                  color: 'var(--text-3)',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                {course.level}
+              </span>
+            </div>
+            <h3
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
+                fontWeight: 700,
+                color: 'var(--text-1)',
+                marginBottom: '0.25rem',
+              }}
+            >
+              {course.name}
+            </h3>
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem',
+                color: 'var(--text-3)',
+              }}
+            >
+              {course.language}
+            </span>
+          </div>
+
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1.5rem',
+              color: 'var(--text-3)',
+              transform: expanded ? 'rotate(45deg)' : 'none',
+              transition: 'transform 0.3s ease',
+            }}
+          >
+            +
+          </span>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            <div
+              style={{
+                padding: '2rem',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '2rem',
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.65rem',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: course.accentColor,
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  Core Topics
+                </div>
+                <ul style={{ listStyle: 'none' }}>
+                  {course.topics.map((t, i) => (
+                    <li
+                      key={i}
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-3)',
+                        padding: '0.3rem 0',
+                        borderBottom: i < course.topics.length - 1 ? '1px solid var(--border)' : 'none',
+                      }}
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.65rem',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: course.accentColor,
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  Teaching Approach
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-3)',
+                    lineHeight: 1.7,
+                    marginBottom: '1.5rem',
+                  }}
+                >
+                  {course.approach}
+                </p>
+
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.65rem',
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: course.accentColor,
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  Student Outcomes
+                </div>
+                <ul style={{ listStyle: 'none' }}>
+                  {course.outcomes.map((o, i) => (
+                    <li
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        gap: '0.5rem',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.82rem',
+                        color: 'var(--text-3)',
+                        marginBottom: '0.4rem',
+                      }}
+                    >
+                      <span style={{ color: 'var(--accent)' }}>✓</span>
+                      {o}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+/* ================================================================
+   MAIN COMPONENT
+   ================================================================ */
+const Teaching = () => {
+  const timelineLineRef = useRef(null);
+
+  useEffect(() => {
+    if (!timelineLineRef.current) return;
+    gsap.fromTo(
+      timelineLineRef.current,
+      { scaleY: 0 },
+      {
+        scaleY: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: timelineLineRef.current,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          scrub: true,
+        },
+      }
+    );
+  }, []);
+
+  return (
+    <div style={{ background: 'var(--bg-0)', minHeight: '100vh', color: 'var(--text-1)' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '8rem 2.5rem 6rem' }}>
+
         {/* Header */}
         <motion.div
-          className="mb-20"
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ marginBottom: '6rem' }}
         >
-          <h1 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--text-3)',
+              marginBottom: '1.5rem',
+            }}
+          >
             Teaching & Mentorship
-          </h1>
-          <p className="text-3xl md:text-4xl text-slate-900 font-light max-w-4xl mb-8">
-            Preparing first-year engineers for systems thinking and guiding MCA students toward industry-grade development.
-          </p>
-          <div className="text-slate-600">
-            <p className="mb-2">Assistant Professor</p>
-            <p>R.H. Sapat College of Engineering, Management Studies & Research, Nashik</p>
           </div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(3rem, 8vw, 7rem)',
+              letterSpacing: '0.01em',
+              color: 'var(--text-1)',
+              lineHeight: 0.95,
+              marginBottom: '1.5rem',
+            }}
+          >
+            SHAPING THE
+            <br />
+            <span style={{ color: 'var(--accent)' }}>NEXT BUILDERS</span>
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1rem',
+              color: 'var(--text-3)',
+              maxWidth: '500px',
+              lineHeight: 1.7,
+            }}
+          >
+            Preparing first-year engineers for systems thinking and guiding
+            MCA students toward industry-grade development.
+          </p>
         </motion.div>
 
-        {/* Student Impact Metrics */}
-        <motion.section
-          className="mb-24 py-12 px-8 bg-slate-50 rounded-2xl"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeUp}
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: '1px',
+            background: 'var(--border)',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            marginBottom: '6rem',
+          }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {studentImpact.metrics.map((metric, idx) => (
-              <div key={idx} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-                  {metric.value}
-                </div>
-                <div className="text-sm text-slate-600">
-                  {metric.label}
-                </div>
+          {[
+            { val: '100+', label: 'Students Taught' },
+            { val: '10+',  label: 'Projects Coordinated' },
+            { val: '2',    label: 'Courses' },
+            { val: '3',    label: 'Roles Held' },
+          ].map(({ val, label }) => (
+            <div
+              key={label}
+              style={{
+                background: 'var(--bg-1)',
+                padding: '2rem',
+                textAlign: 'center',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                  color: 'var(--text-1)',
+                  lineHeight: 1,
+                  marginBottom: '0.5rem',
+                }}
+              >
+                {val}
               </div>
-            ))}
-          </div>
-        </motion.section>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.65rem',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-3)',
+                }}
+              >
+                {label}
+              </div>
+            </div>
+          ))}
+        </motion.div>
 
-        {/* Courses Taught */}
-        <motion.section
-          className="mb-24"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
-        >
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
+        {/* Courses */}
+        <div style={{ marginBottom: '6rem' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--text-3)',
+              marginBottom: '2rem',
+            }}
+          >
             Courses Taught
-          </h2>
-          
-          <div className="space-y-16">
-            {courses.map((course, idx) => (
-              <motion.div
-                key={idx}
-                className="border-l-2 border-slate-300 pl-8"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={fadeUp}
-                custom={idx}
-              >
-                <div className="mb-6">
-                  <div className="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-medium rounded-full mb-3">
-                    {course.code}
-                  </div>
-                  <h3 className="text-2xl font-semibold text-slate-900 mb-2">
-                    {course.name}
-                  </h3>
-                  <div className="flex flex-wrap gap-3 text-sm text-slate-600">
-                    <span>{course.language}</span>
-                    <span>•</span>
-                    <span>{course.level}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-3">
-                      Core Topics
-                    </h4>
-                    <ul className="space-y-2">
-                      {course.topics.map((topic, i) => (
-                        <li key={i} className="flex items-start gap-3 text-slate-700">
-                          <span className="text-slate-400 mt-1">•</span>
-                          <span>{topic}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-3">
-                      Teaching Approach
-                    </h4>
-                    <p className="text-slate-700 leading-relaxed">
-                      {course.approach}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-3">
-                      Student Outcomes
-                    </h4>
-                    <ul className="space-y-2">
-                      {course.outcomes.map((outcome, i) => (
-                        <li key={i} className="flex items-start gap-3 text-slate-700">
-                          <span className="text-slate-400 mt-1">•</span>
-                          <span>{outcome}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </motion.div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {courses.map((course, i) => (
+              <CourseCard key={course.code} course={course} index={i} />
             ))}
           </div>
-        </motion.section>
+        </div>
 
-        {/* Coordination Responsibilities */}
-        <motion.section
-          className="mb-24"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
-        >
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
+        {/* Timeline — Academic Leadership */}
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--text-3)',
+              marginBottom: '2.5rem',
+            }}
+          >
             Academic Leadership
-          </h2>
-          
-          <div className="space-y-12">
-            {responsibilities.map((resp, idx) => (
-              <motion.div
-                key={idx}
-                className="bg-slate-50 rounded-2xl p-8"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={fadeUp}
-                custom={idx}
-              >
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">
-                  {resp.title}
-                </h3>
-                <p className="text-slate-700 mb-6 leading-relaxed">
-                  {resp.description}
-                </p>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-3">
-                    Key Activities
-                  </h4>
-                  <ul className="space-y-2">
-                    {resp.activities.map((activity, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-700">
-                        <span className="text-slate-400 mt-1">•</span>
-                        <span>{activity}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-4 border-t border-slate-200">
-                  <p className="text-sm text-slate-600 italic">
-                    {resp.impact}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
           </div>
-        </motion.section>
 
-        {/* Teaching Philosophy */}
-        <motion.section
-          className="mb-24"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          <div style={{ position: 'relative' }}>
+            {/* Vertical timeline line */}
+            <div
+              style={{
+                position: 'absolute',
+                left: '21px',
+                top: '22px',
+                bottom: '22px',
+                width: '1px',
+                background: 'var(--border)',
+              }}
+            >
+              <div
+                ref={timelineLineRef}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: `linear-gradient(to bottom, var(--accent), var(--accent-warm))`,
+                  transformOrigin: 'top',
+                  transform: 'scaleY(0)',
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {responsibilities.map((item, i) => (
+                <TimelineNode key={i} item={item} index={i} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Philosophy */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          style={{
+            marginTop: '6rem',
+            padding: '3rem',
+            background: 'var(--bg-1)',
+            border: '1px solid var(--border)',
+            borderRadius: '20px',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
         >
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
+          <div
+            style={{
+              position: 'absolute',
+              top: '-50%',
+              right: '-20%',
+              width: '400px',
+              height: '400px',
+              background: 'radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--accent)',
+              marginBottom: '1.5rem',
+            }}
+          >
             Teaching Philosophy
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {teachingPhilosophy.principles.map((principle, idx) => (
-              <motion.div
-                key={idx}
-                className="space-y-3"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={fadeUp}
-                custom={idx}
-              >
-                <h3 className="text-lg font-semibold text-slate-900">
-                  {principle.title}
-                </h3>
-                <p className="text-slate-700 leading-relaxed">
-                  {principle.description}
-                </p>
-              </motion.div>
-            ))}
           </div>
-        </motion.section>
-
-        {/* Academic-Industry Bridge */}
-        <motion.section
-          className="py-16 px-8 bg-slate-900 text-white rounded-2xl"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeUp}
-        >
-          <div className="max-w-3xl">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">
-              The Academic-Industry Bridge
-            </h2>
-            <p className="text-slate-300 leading-relaxed mb-6">
-              I don't just teach programming — I prepare students for real industry problems. 
-              My dual role as educator and practicing engineer allows me to bring current 
-              development practices directly into the classroom.
-            </p>
-            <p className="text-slate-300 leading-relaxed">
-              Students learn not just syntax, but how to think like professional engineers: 
-              debugging systematically, writing maintainable code, understanding trade-offs, 
-              and building systems that solve real problems.
-            </p>
-          </div>
-        </motion.section>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'clamp(1rem, 2vw, 1.3rem)',
+              fontWeight: 300,
+              color: 'var(--text-1)',
+              lineHeight: 1.7,
+              maxWidth: '680px',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            I don't just teach programming — I prepare students for real industry problems.
+            My dual role as educator and practicing engineer allows me to bring{' '}
+            <span style={{ color: 'var(--accent)' }}>current development practices</span>{' '}
+            directly into the classroom.
+          </p>
+        </motion.div>
 
         {/* CTA */}
-        <motion.div
-          className="mt-24 pt-12 border-t border-slate-200 text-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-          variants={fadeUp}
-        >
-          <h3 className="text-2xl font-semibold text-slate-900 mb-4">
-            Academic Collaboration
-          </h3>
-          <p className="text-slate-600 mb-8 max-w-2xl mx-auto">
-            Open to curriculum development, guest lectures, technical workshops, 
-            and collaborative research in computer science education.
-          </p>
+        <div style={{ marginTop: '5rem', textAlign: 'center' }}>
           <a
-            href="Contact"
-            className="inline-block px-6 py-3 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors"
+            href="/contact"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.9rem 2.5rem',
+              borderRadius: '100px',
+              border: '1px solid var(--border-hover)',
+              color: 'var(--text-1)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent)';
+              e.currentTarget.style.color = 'var(--accent)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-hover)';
+              e.currentTarget.style.color = 'var(--text-1)';
+            }}
           >
-            Connect for Collaboration
+            Academic Collaboration
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </a>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

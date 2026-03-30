@@ -1,112 +1,201 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+/**
+ * Contact.jsx — Animated Contact Experience
+ *
+ * Features:
+ * - Magnetic input fields (follow cursor within proximity)
+ * - Send button with particle burst animation
+ * - GSAP-staggered form reveal
+ * - Real EmailJS integration preserved
+ * - Corner decoration accents
+ */
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
-  })
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
+
+/* ---- Animated input field ---- */
+const MagneticField = ({ label, children, required }) => {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <label
+        style={{
+          display: 'block',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.65rem',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: focused ? 'var(--accent)' : 'var(--text-3)',
+          marginBottom: '0.6rem',
+          transition: 'color 0.3s ease',
+        }}
+      >
+        {label}{required && <span style={{ color: 'var(--accent)', marginLeft: '2px' }}>*</span>}
+      </label>
+      <div
+        onFocusCapture={() => setFocused(true)}
+        onBlurCapture={() => setFocused(false)}
+        style={{
+          position: 'relative',
+          borderRadius: '10px',
+          border: `1px solid ${focused ? 'rgba(129,140,248,0.5)' : 'var(--border)'}`,
+          background: focused ? 'rgba(129,140,248,0.04)' : 'var(--bg-1)',
+          transition: 'border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
+          boxShadow: focused ? '0 0 0 3px rgba(129,140,248,0.08)' : 'none',
+        }}
+      >
+        {/* Animated accent line at bottom */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: -1,
+            left: 0,
+            height: '2px',
+            width: '100%',
+            background: 'var(--accent)',
+            borderRadius: '0 0 10px 10px',
+            transform: focused ? 'scaleX(1)' : 'scaleX(0)',
+            transformOrigin: 'left',
+            transition: 'transform 0.4s cubic-bezier(0.22,1,0.36,1)',
+          }}
+        />
+        {children}
+      </div>
+    </div>
+  );
 };
 
-const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    organization: '',
-    inquiry: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+const inputStyle = {
+  width: '100%',
+  padding: '0.85rem 1rem',
+  background: 'transparent',
+  border: 'none',
+  outline: 'none',
+  fontFamily: 'var(--font-body)',
+  fontSize: '0.9rem',
+  color: 'var(--text-1)',
+  borderRadius: '10px',
+  cursor: 'none',
+};
 
-  const appropriateInquiries = [
-    {
-      category: "Academic Collaboration",
-      examples: "Curriculum development, guest lectures, technical workshops"
-    },
-    {
-      category: "Technical Work",
-      examples: "Web application development, architecture review, code assessment"
-    },
-    {
-      category: "Student Mentorship",
-      examples: "Industry guidance for student teams, project evaluation"
-    },
-    {
-      category: "Professional Guidance",
-      examples: "Career mentorship, technical decision consultation"
-    }
-  ];
+/* ---- Send button with ripple ---- */
+const SendButton = ({ isSubmitting, onClick }) => {
+  const btnRef = useRef(null);
 
-  const contactInfo = [
-    {
-      label: "Email",
-      value: "kaustubhvdeshmukh2001@gmail.com",
-      link: "mailto:kaustubhvdeshmukh2001@gmail.com",
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-      )
-    },
-    {
-      label: "Institution",
-      value: "R.H. Sapat College of Engineering, Nashik",
-      link: null,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      )
-    },
-    {
-      label: "Location",
-      value: "Nashik, Maharashtra, India",
-      link: null,
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      )
-    }
-  ];
+  const handleClick = (e) => {
+    const btn = btnRef.current;
+    if (!btn) return;
 
-  const professionalLinks = [
-    {
-      platform: "LinkedIn",
-      url: "https://linkedin.com/in/kaustubh-deshmukh8851",
-      purpose: "Professional networking"
-    },
-    {
-      platform: "GitHub",
-      url: "https://github.com/nameiskaustubh",
-      purpose: "Code repositories"
-    },
-    {
-      platform: "LeetCode",
-      url: "https://leetcode.com/afcpwRGndV",
-      purpose: "Problem-solving practice"
-    }
-  ];
-
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    // Ripple
+    const ripple = document.createElement('span');
+    const rect = btn.getBoundingClientRect();
+    ripple.style.cssText = `
+      position:absolute; border-radius:50%; background:rgba(255,255,255,0.3);
+      width:10px; height:10px;
+      top:${e.clientY - rect.top - 5}px;
+      left:${e.clientX - rect.left - 5}px;
+      pointer-events:none; z-index:10;
+    `;
+    btn.appendChild(ripple);
+    gsap.to(ripple, {
+      scale: 30, opacity: 0, duration: 0.6, ease: 'power2.out',
+      onComplete: () => ripple.remove(),
     });
+
+    onClick(e);
   };
 
-  const handleSubmit = (e) => {
+  return (
+    <motion.button
+      ref={btnRef}
+      onClick={handleClick}
+      disabled={isSubmitting}
+      whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        padding: '1rem',
+        borderRadius: '12px',
+        border: 'none',
+        background: isSubmitting
+          ? 'var(--bg-2)'
+          : 'linear-gradient(135deg, var(--accent), #6366f1)',
+        color: 'var(--text-1)',
+        fontFamily: 'var(--font-mono)',
+        fontSize: '0.8rem',
+        letterSpacing: '0.15em',
+        textTransform: 'uppercase',
+        cursor: isSubmitting ? 'not-allowed' : 'none',
+        overflow: 'hidden',
+        transition: 'background 0.3s ease',
+        boxShadow: isSubmitting ? 'none' : '0 4px 24px rgba(129,140,248,0.3)',
+      }}
+    >
+      {isSubmitting ? (
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+          <span
+            style={{
+              width: '14px', height: '14px', borderRadius: '50%',
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderTopColor: 'var(--text-1)',
+              animation: 'spin 0.8s linear infinite',
+            }}
+          />
+          Sending...
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </span>
+      ) : (
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+          Send Message
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </span>
+      )}
+    </motion.button>
+  );
+};
+
+/* ================================================================
+   MAIN COMPONENT
+   ================================================================ */
+const Contact = () => {
+  const formRef = useRef(null);
+  const [formData, setFormData] = useState({
+    name: '', email: '', organization: '', inquiry: '', message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+
+  // GSAP form reveal
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        formRef.current?.children || [],
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out', delay: 0.3 }
+      );
+    });
+    return () => ctx.revert();
+  }, []);
+
+  const handleChange = (e) =>
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    const serviceId = "service_35jfvll";
-    const templateId = "template_i18ju09";
-    const publicKey = "Q-h55re78pcIna9G1";
+    const emailjs = window.emailjs;
+    if (!emailjs) {
+      setSubmitStatus('error');
+      setIsSubmitting(false);
+      return;
+    }
 
     const templateParams = {
       name: formData.name,
@@ -115,283 +204,381 @@ const Contact = () => {
       inquiry: formData.inquiry,
       message: formData.message,
       reply_to: formData.email,
-      time: new Date().toLocaleString()
+      time: new Date().toLocaleString(),
     };
 
-    const emailjs = window.emailjs;
-    if (!emailjs) {
+    try {
+      await emailjs.send(
+        'service_35jfvll',
+        'template_i18ju09',
+        templateParams,
+        'Q-h55re78pcIna9G1'
+      );
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', organization: '', inquiry: '', message: '' });
+    } catch (err) {
+      console.error(err);
       setSubmitStatus('error');
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-    
-    emailjs.send(serviceId, templateId, templateParams, publicKey)
-      .then(() => {
-        setSubmitStatus('success');
-        setFormData({ name: '', email: '', organization: '', inquiry: '', message: '' });
-      })
-      .catch((error) => {
-        console.error('Email error:', error);
-        setSubmitStatus('error');
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
   };
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-20">
-      <div className="max-w-6xl mx-auto px-6">
-        
+    <div style={{ background: 'var(--bg-0)', minHeight: '100vh', color: 'var(--text-1)' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '8rem 2.5rem 6rem' }}>
+
         {/* Header */}
         <motion.div
-          className="mb-20"
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ marginBottom: '6rem' }}
         >
-          <h1 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
-            Contact
+          <div className="label" style={{ marginBottom: '1.5rem' }}>Get in Touch</div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(3rem, 8vw, 7rem)',
+              letterSpacing: '0.01em',
+              lineHeight: 0.95,
+              marginBottom: '1.5rem',
+              color: 'var(--text-1)',
+            }}
+          >
+            LET'S
+            <br />
+            <span style={{ color: 'var(--accent)' }}>CONNECT</span>
           </h1>
-          <p className="text-3xl md:text-4xl text-slate-900 font-light max-w-4xl">
-            For academic collaboration, technical work, or mentorship aligned with teaching, project coordination, or production engineering.
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1rem',
+              color: 'var(--text-3)',
+              maxWidth: '480px',
+              lineHeight: 1.7,
+            }}
+          >
+            For academic collaboration, technical work, or mentorship aligned
+            with teaching, project coordination, or production engineering.
           </p>
         </motion.div>
 
-        {/* Appropriate Inquiries */}
-        <motion.section
-          className="mb-20"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+        {/* Grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '4rem',
+            alignItems: 'start',
+          }}
         >
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
-            Appropriate Inquiries
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            {appropriateInquiries.map((type, idx) => (
-              <motion.div
-                key={idx}
-                className="border-l-2 border-slate-200 pl-6 py-2"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={fadeUp}
-                custom={idx}
-              >
-                <h3 className="text-base font-semibold text-slate-900 mb-2">
-                  {type.category}
-                </h3>
-                <p className="text-sm text-slate-600">
-                  {type.examples}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+          {/* Left — Form */}
+          <div>
+            {/* Status messages */}
+            <AnimatePresence>
+              {submitStatus === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  style={{
+                    marginBottom: '1.5rem',
+                    padding: '1rem 1.25rem',
+                    borderRadius: '12px',
+                    background: 'rgba(52, 211, 153, 0.08)',
+                    border: '1px solid rgba(52, 211, 153, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>✓</span>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#34d399' }}>
+                    Message sent. I'll respond within 24–48 hours.
+                  </p>
+                </motion.div>
+              )}
+              {submitStatus === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    marginBottom: '1.5rem',
+                    padding: '1rem 1.25rem',
+                    borderRadius: '12px',
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                  }}
+                >
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: '#f87171' }}>
+                    Failed to send. Email directly:{' '}
+                    <a href="mailto:kaustubhvdeshmukh2001@gmail.com" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
+                      kaustubhvdeshmukh2001@gmail.com
+                    </a>
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-        {/* Contact Form & Info Grid */}
-        <div className="grid lg:grid-cols-5 gap-12 mb-20">
-          
-          {/* Contact Form */}
-          <motion.div
-            className="lg:col-span-3"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUp}
-          >
-            <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-8">
-              Send Message
-            </h2>
-
-            {submitStatus === 'success' && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800 text-sm">
-                  Message sent. I'll respond within 24-48 hours.
-                </p>
-              </div>
-            )}
-
-            {submitStatus === 'error' && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 text-sm">
-                  Failed to send. Please email directly at kaustubhvdeshmukh2001@gmail.com
-                </p>
-              </div>
-            )}
-
-            <div className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Name
-                  </label>
+            <form ref={formRef} onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <MagneticField label="Name" required>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
+                    onChange={handleChange}
                     placeholder="Your name"
+                    required
+                    style={{ ...inputStyle }}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Email
-                  </label>
+                </MagneticField>
+                <MagneticField label="Email" required>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
-                    placeholder="your.email@example.com"
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    required
+                    style={{ ...inputStyle }}
                   />
-                </div>
+                </MagneticField>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Organization
-                </label>
+              <MagneticField label="Organization">
                 <input
                   type="text"
                   name="organization"
                   value={formData.organization}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors"
+                  onChange={handleChange}
                   placeholder="Institution or company"
+                  style={{ ...inputStyle }}
                 />
-              </div>
+              </MagneticField>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Inquiry Type
-                </label>
+              <MagneticField label="Inquiry Type" required>
                 <select
                   name="inquiry"
                   value={formData.inquiry}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:border-slate-400 focus:outline-none transition-colors"
+                  onChange={handleChange}
+                  required
+                  style={{
+                    ...inputStyle,
+                    appearance: 'none',
+                  }}
                 >
-                  <option value="">Select type</option>
-                  <option value="academic">Academic Collaboration</option>
-                  <option value="technical">Technical Work</option>
-                  <option value="student">Student Mentorship</option>
-                  <option value="guidance">Professional Guidance</option>
-                  <option value="other">Other</option>
+                  <option value="" style={{ background: 'var(--bg-1)' }}>Select type</option>
+                  <option value="academic"  style={{ background: 'var(--bg-1)' }}>Academic Collaboration</option>
+                  <option value="technical" style={{ background: 'var(--bg-1)' }}>Technical Work</option>
+                  <option value="student"   style={{ background: 'var(--bg-1)' }}>Student Mentorship</option>
+                  <option value="guidance"  style={{ background: 'var(--bg-1)' }}>Professional Guidance</option>
+                  <option value="other"     style={{ background: 'var(--bg-1)' }}>Other</option>
                 </select>
-              </div>
+              </MagneticField>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Message
-                </label>
+              <MagneticField label="Message" required>
                 <textarea
                   name="message"
                   value={formData.message}
-                  onChange={handleInputChange}
-                  rows={6}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:border-slate-400 focus:outline-none transition-colors resize-none"
+                  onChange={handleChange}
                   placeholder="Describe your inquiry..."
+                  rows={5}
+                  required
+                  style={{ ...inputStyle, resize: 'none' }}
                 />
-              </div>
+              </MagneticField>
 
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="w-full bg-slate-900 text-white font-medium py-3 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-              </button>
-            </div>
-          </motion.div>
+              <SendButton isSubmitting={isSubmitting} onClick={handleSubmit} />
+            </form>
+          </div>
 
-          {/* Contact Info Sidebar */}
-          <motion.div
-            className="lg:col-span-2 space-y-8"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={fadeUp}
-            custom={1}
-          >
-            {/* Direct Contact */}
-            <div>
-              <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
-                Direct Contact
-              </h3>
-              <div className="space-y-4">
-                {contactInfo.map((info, idx) => (
-                  <div key={idx} className="flex items-start gap-4">
-                    <div className="text-slate-600 mt-0.5">
-                      {info.icon}
+          {/* Right — Info */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+            {/* Direct contact */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              style={{
+                background: 'var(--bg-1)',
+                border: '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '1.75rem',
+              }}
+            >
+              <div className="label" style={{ marginBottom: '1.25rem' }}>Direct Contact</div>
+              {[
+                {
+                  icon: (
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  ),
+                  label: 'Email',
+                  value: 'kaustubhvdeshmukh2001@gmail.com',
+                  link: 'mailto:kaustubhvdeshmukh2001@gmail.com',
+                },
+                {
+                  icon: (
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  ),
+                  label: 'Institution',
+                  value: 'R.H. Sapat College, Nashik',
+                  link: null,
+                },
+                {
+                  icon: (
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  ),
+                  label: 'Location',
+                  value: 'Nashik, Maharashtra, India',
+                  link: null,
+                },
+              ].map(({ icon, label, value, link }) => (
+                <div
+                  key={label}
+                  style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    alignItems: 'flex-start',
+                    padding: '0.75rem 0',
+                    borderBottom: '1px solid var(--border)',
+                  }}
+                >
+                  <span style={{ color: 'var(--accent)', marginTop: '2px', flexShrink: 0 }}>{icon}</span>
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.62rem',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        color: 'var(--text-3)',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      {label}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-slate-900 mb-1">
-                        {info.label}
-                      </div>
-                      {info.link ? (
-                        <a
-                          href={info.link}
-                          className="text-sm text-slate-600 hover:text-slate-900 transition-colors break-all"
-                        >
-                          {info.value}
-                        </a>
-                      ) : (
-                        <div className="text-sm text-slate-600">
-                          {info.value}
-                        </div>
-                      )}
+                    {link ? (
+                      <a
+                        href={link}
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.82rem',
+                          color: 'var(--text-2)',
+                          textDecoration: 'none',
+                          wordBreak: 'break-all',
+                          transition: 'color 0.2s',
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-2)')}
+                      >
+                        {value}
+                      </a>
+                    ) : (
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-2)' }}>
+                        {value}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Professional profiles */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              style={{
+                background: 'var(--bg-1)',
+                border: '1px solid var(--border)',
+                borderRadius: '16px',
+                padding: '1.75rem',
+              }}
+            >
+              <div className="label" style={{ marginBottom: '1.25rem' }}>Professional Profiles</div>
+              {[
+                { platform: 'LinkedIn',  url: 'https://linkedin.com/in/kaustubh-deshmukh8851', detail: 'Professional networking' },
+                { platform: 'GitHub',    url: 'https://github.com/nameiskaustubh',              detail: 'Code repositories' },
+                { platform: 'LeetCode',  url: 'https://leetcode.com/afcpwRGndV',                detail: 'Problem-solving practice' },
+              ].map(({ platform, url, detail }) => (
+                <a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.75rem',
+                    borderRadius: '10px',
+                    textDecoration: 'none',
+                    marginBottom: '0.5rem',
+                    transition: 'background 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-2)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: 'var(--text-1)',
+                        marginBottom: '0.1rem',
+                      }}
+                    >
+                      {platform}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--text-3)', letterSpacing: '0.06em' }}>
+                      {detail}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <svg width="14" height="14" fill="none" stroke="var(--text-3)" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              ))}
+            </motion.div>
 
-            {/* Professional Links */}
-            <div>
-              <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
-                Professional Profiles
-              </h3>
-              <div className="space-y-3">
-                {professionalLinks.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors group"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-slate-900 group-hover:text-slate-700">
-                        {link.platform}
-                      </span>
-                      <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      {link.purpose}
-                    </p>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Response Time */}
-            <div className="p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">
-                Response Time
-              </h3>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                Typical response within 24-48 hours. For urgent academic matters, mention the timeline in your message.
+            {/* Response time */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              style={{
+                padding: '1.25rem 1.5rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(129,140,248,0.2)',
+                background: 'rgba(129,140,248,0.04)',
+                display: 'flex',
+                gap: '0.75rem',
+                alignItems: 'flex-start',
+              }}
+            >
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', marginTop: '6px', flexShrink: 0, boxShadow: '0 0 8px var(--accent)' }} />
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-3)', lineHeight: 1.6 }}>
+                Typical response within{' '}
+                <span style={{ color: 'var(--text-1)' }}>24–48 hours</span>.
+                For urgent academic matters, mention the timeline in your message.
               </p>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,184 +1,436 @@
-import React, { useState } from "react";
-import { BookOpen, Users, Code, MessageSquare, ArrowRight } from "lucide-react";
+/**
+ * ProfessionalEngagements.jsx — Dark Cinematic Theme
+ * Preserves all existing logic, upgrades visual identity.
+ */
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, Users, Code, MessageSquare } from 'lucide-react';
 
 const engagements = [
   {
-    title: "Academic & Teaching Engagements",
-    description: "Programming instruction in C and Python for engineering students. Curriculum development, academic mentorship, and preparation for technical practice.",
-    icon: <BookOpen className="w-6 h-6" />,
+    title: 'Academic & Teaching',
+    tag: '01',
+    color: 'var(--accent)',
+    icon: <BookOpen size={20} />,
+    description:
+      'Programming instruction in C and Python for engineering students. Curriculum development, academic mentorship, and preparation for technical practice.',
     details: [
-      "Foundational programming and computational thinking",
-      "Curriculum design aligned with industry requirements",
-      "Academic guidance for project work and research",
-      "Technical interview and professional preparation"
-    ]
+      'Foundational programming and computational thinking',
+      'Curriculum design aligned with industry requirements',
+      'Academic guidance for project work and research',
+      'Technical interview and professional preparation',
+    ],
   },
   {
-    title: "Student Projects & Internship Guidance",
-    description: "MCA major project coordination, including scope evaluation and feasibility assessment. Industry internship oversight and technical mentorship.",
-    icon: <Users className="w-6 h-6" />,
+    title: 'Student Projects & Internships',
+    tag: '02',
+    color: 'var(--accent-warm)',
+    icon: <Users size={20} />,
+    description:
+      'MCA major project coordination, including scope evaluation and feasibility assessment. Industry internship oversight and technical mentorship.',
     details: [
-      "Project scope definition and feasibility analysis",
-      "Internship coordination and evaluation",
-      "Guidance on production-oriented implementations",
-      "Technical mentorship through development lifecycle"
-    ]
+      'Project scope definition and feasibility analysis',
+      'Internship coordination and evaluation',
+      'Guidance on production-oriented implementations',
+      'Technical mentorship through development lifecycle',
+    ],
   },
   {
-    title: "Production-Ready Web & Software Applications",
-    description: "End-to-end web application development with React frontends and backend integration. Architecture, maintainability, and deployment for long-term production use.",
-    icon: <Code className="w-6 h-6" />,
+    title: 'Production Web & Software',
+    tag: '03',
+    color: 'var(--accent-cyan)',
+    icon: <Code size={20} />,
+    description:
+      'End-to-end web application development with React frontends and backend integration. Architecture, maintainability, and deployment for long-term production use.',
     details: [
-      "Full-stack application architecture and implementation",
-      "React-based frontend with backend API integration",
-      "Database design and data flow management",
-      "Performance optimization and deployment strategy",
-      "Code structure for maintainability and team handoff"
-    ]
+      'Full-stack architecture and implementation',
+      'React-based frontend with backend API integration',
+      'Database design and data flow management',
+      'Performance optimisation and deployment strategy',
+      'Code structure for maintainability and team handoff',
+    ],
   },
   {
-    title: "Mentorship & Technical Reviews",
-    description: "Code and architecture reviews for teams and individual developers. Technical decision guidance and career mentorship with focus on system thinking.",
-    icon: <MessageSquare className="w-6 h-6" />,
+    title: 'Mentorship & Technical Reviews',
+    tag: '04',
+    color: '#a78bfa',
+    icon: <MessageSquare size={20} />,
+    description:
+      'Code and architecture reviews for teams and individual developers. Technical decision guidance and career mentorship with focus on system thinking.',
     details: [
-      "Code quality and architecture assessments",
-      "Technical decision frameworks and trade-off analysis",
-      "Career guidance for engineers and developers",
-      "System design review and long-term impact evaluation"
-    ]
+      'Code quality and architecture assessments',
+      'Technical decision frameworks and trade-off analysis',
+      'Career guidance for engineers and developers',
+      'System design review and long-term impact evaluation',
+    ],
   },
 ];
 
-const ProfessionalEngagements = () => {
-  const [expandedIndex, setExpandedIndex] = useState(null);
+const EngagementCard = ({ item, index }) => {
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-32 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-24">
-          <div className="inline-block mb-6">
-            <div className="flex items-center gap-3 text-sm font-medium text-slate-500 tracking-wider uppercase">
-              <div className="w-8 h-px bg-slate-300"></div>
-              <span>Professional Engagements</span>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.7, delay: index * 0.1 }}
+      onClick={() => setExpanded((e) => !e)}
+      style={{
+        background: 'var(--bg-1)',
+        border: `1px solid ${expanded ? item.color + '30' : 'var(--border)'}`,
+        borderRadius: '16px',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        transition: 'border-color 0.3s ease',
+      }}
+    >
+      <div style={{ padding: '2rem' }}>
+        {/* Card Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+            {/* Icon */}
+            <div
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '12px',
+                background: `${item.color}12`,
+                border: `1px solid ${item.color}30`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: item.color,
+                flexShrink: 0,
+                transition: 'background 0.3s ease',
+              }}
+            >
+              {item.icon}
+            </div>
+
+            <div>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.6rem',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  color: item.color,
+                  display: 'block',
+                  marginBottom: '0.4rem',
+                }}
+              >
+                {item.tag}
+              </span>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+                  fontWeight: 700,
+                  color: 'var(--text-1)',
+                  lineHeight: 1.3,
+                }}
+              >
+                {item.title}
+              </h3>
             </div>
           </div>
-          
-          <h2 className="text-5xl md:text-6xl font-semibold text-slate-900 mb-8 tracking-tight leading-tight">
-            Areas of Engagement
-          </h2>
-          
-          <p className="text-xl text-slate-600 leading-relaxed max-w-3xl">
-            The contexts in which professional and technical engagement is appropriate. Each area carries specific responsibilities and standards.
-          </p>
+
+          {/* Expand icon */}
+          <div
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              border: `1px solid ${item.color}30`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: item.color,
+              flexShrink: 0,
+              fontSize: '1rem',
+              transition: 'transform 0.3s ease, background 0.3s ease',
+              transform: expanded ? 'rotate(45deg)' : 'none',
+              background: expanded ? `${item.color}15` : 'transparent',
+            }}
+          >
+            +
+          </div>
         </div>
 
-        {/* Engagements Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-28">
-          {engagements.map((engagement, index) => (
-            <div
-              key={index}
-              className="group relative bg-white border border-slate-200 rounded-2xl p-8 hover:border-slate-400 hover:shadow-xl hover:shadow-slate-900/5 transition-all duration-500 cursor-pointer"
-              onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.875rem',
+            color: 'var(--text-3)',
+            lineHeight: 1.65,
+          }}
+        >
+          {item.description}
+        </p>
+
+        {/* Expandable details */}
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              style={{ overflow: 'hidden' }}
             >
-              {/* Accent line */}
-              <div className="absolute top-0 left-0 w-1 h-16 bg-gradient-to-b from-slate-900 to-slate-400 rounded-tl-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Icon */}
-              <div className="mb-6">
-                <div className="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500">
-                  {engagement.icon}
-                </div>
-              </div>
+              <ul
+                style={{
+                  listStyle: 'none',
+                  marginTop: '1.5rem',
+                  paddingTop: '1.5rem',
+                  borderTop: `1px solid ${item.color}20`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
+                {item.details.map((d, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      gap: '0.6rem',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.82rem',
+                      color: 'var(--text-3)',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <span style={{ color: item.color, flexShrink: 0, marginTop: '2px' }}>→</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
 
-              {/* Content */}
-              <div>
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-2xl font-semibold text-slate-900 tracking-tight leading-tight pr-4">
-                    {engagement.title}
-                  </h3>
-                  <ArrowRight 
-                    className={`w-5 h-5 text-slate-400 flex-shrink-0 mt-1 transition-all duration-500 ${
-                      expandedIndex === index ? 'rotate-90 text-slate-900' : 'group-hover:translate-x-1'
-                    }`}
-                  />
-                </div>
-                
-                <p className="text-slate-600 leading-relaxed mb-6">
-                  {engagement.description}
-                </p>
+const ProfessionalEngagements = () => {
+  const principles = [
+    { text: 'Honest assessment over optimism' },
+    { text: 'Maintainability over rapid delivery' },
+    { text: 'System thinking over isolated fixes' },
+    { text: 'Long-term outcomes over immediate wins' },
+  ];
 
-                {/* Expandable Details */}
-                <div 
-                  className={`overflow-hidden transition-all duration-500 ${
-                    expandedIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <div className="pt-4 border-t border-slate-200">
-                    <ul className="space-y-3">
-                      {engagement.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-slate-600">
-                          <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="leading-relaxed">{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+  return (
+    <div style={{ background: 'var(--bg-0)', minHeight: '100vh', color: 'var(--text-1)' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '8rem 2.5rem 6rem' }}>
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          style={{ marginBottom: '6rem' }}
+        >
+          <div className="label" style={{ marginBottom: '1.5rem' }}>Professional Engagements</div>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(3rem, 8vw, 7rem)',
+              letterSpacing: '0.01em',
+              lineHeight: 0.95,
+              marginBottom: '1.5rem',
+              color: 'var(--text-1)',
+            }}
+          >
+            AREAS OF
+            <br />
+            <span style={{ color: 'var(--accent)' }}>ENGAGEMENT</span>
+          </h1>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1rem',
+              color: 'var(--text-3)',
+              maxWidth: '520px',
+              lineHeight: 1.7,
+            }}
+          >
+            The contexts in which professional and technical engagement is
+            appropriate. Each area carries specific responsibilities and standards.
+          </p>
+        </motion.div>
+
+        {/* Engagements grid */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '1rem',
+            marginBottom: '6rem',
+          }}
+        >
+          {engagements.map((item, i) => (
+            <EngagementCard key={item.tag} item={item} index={i} />
           ))}
         </div>
 
-        {/* Standards & Approach */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          <div className="md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">
-              Standards & Approach
-            </h3>
-            <p className="text-slate-600 leading-relaxed">
-              These engagements balance academic responsibility with production engineering. Each requires clear communication, honest feasibility assessment, and commitment to outcomes that serve their purpose beyond initial delivery.
+        {/* Standards + Principles */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '2rem',
+            marginBottom: '5rem',
+          }}
+        >
+          {/* Standards prose */}
+          <div>
+            <div className="label" style={{ marginBottom: '1.5rem' }}>Standards & Approach</div>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.9rem',
+                color: 'var(--text-3)',
+                lineHeight: 1.75,
+                marginBottom: '1rem',
+              }}
+            >
+              These engagements balance academic responsibility with production
+              engineering. Each requires clear communication, honest feasibility
+              assessment, and commitment to outcomes that serve their purpose
+              beyond initial delivery.
             </p>
-            <p className="text-slate-600 leading-relaxed">
-              Whether coordinating student work, building systems, or providing technical guidance, the focus remains on maintainability, responsible decision-making, and long-term impact.
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.9rem',
+                color: 'var(--text-3)',
+                lineHeight: 1.75,
+              }}
+            >
+              Whether coordinating student work, building systems, or providing
+              technical guidance, the focus remains on maintainability,
+              responsible decision-making, and long-term impact.
             </p>
           </div>
-          
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8">
-            <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
-              Core Principles
-            </h4>
-            <ul className="space-y-3 text-slate-700">
-              <li className="flex items-start gap-3">
-                <div className="w-1 h-1 bg-slate-900 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm leading-relaxed">Honest assessment over optimism</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-1 h-1 bg-slate-900 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm leading-relaxed">Maintainability over rapid delivery</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-1 h-1 bg-slate-900 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm leading-relaxed">System thinking over isolated fixes</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-1 h-1 bg-slate-900 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-sm leading-relaxed">Long-term outcomes over immediate wins</span>
-              </li>
+
+          {/* Principles card */}
+          <div
+            style={{
+              background: 'var(--bg-1)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '1.75rem',
+            }}
+          >
+            <div className="label" style={{ marginBottom: '1.25rem' }}>Core Principles</div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {principles.map(({ text }, i) => (
+                <li
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    gap: '0.75rem',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-3)',
+                    padding: '0.5rem 0',
+                    borderBottom: i < principles.length - 1 ? '1px solid var(--border)' : 'none',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '4px',
+                      height: '4px',
+                      borderRadius: '50%',
+                      background: 'var(--accent)',
+                      flexShrink: 0,
+                      marginTop: '7px',
+                    }}
+                  />
+                  {text}
+                </li>
+              ))}
             </ul>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Scope Definition */}
-        <div className="border-t border-slate-200 pt-12">
-          <div className="max-w-4xl">
-            <p className="text-lg text-slate-700 leading-relaxed">
-              Professional engagement means understanding context, constraints, and consequences. It requires evaluating technical trade-offs, communicating clearly about what's feasible, and maintaining responsibility for decisions that affect students, systems, and outcomes.
-            </p>
-          </div>
+        {/* Scope definition */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          style={{
+            padding: '2.5rem 3rem',
+            borderLeft: '2px solid var(--accent)',
+            background: 'var(--bg-1)',
+            borderRadius: '0 16px 16px 0',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+              fontWeight: 300,
+              color: 'var(--text-1)',
+              lineHeight: 1.75,
+              maxWidth: '700px',
+            }}
+          >
+            Professional engagement means understanding context, constraints,
+            and consequences. It requires evaluating technical trade-offs,
+            communicating clearly about what's feasible, and maintaining
+            responsibility for decisions that affect{' '}
+            <span style={{ color: 'var(--accent)' }}>students, systems, and outcomes</span>.
+          </p>
+        </motion.div>
+
+        {/* CTA */}
+        <div style={{ marginTop: '5rem', textAlign: 'center' }}>
+          <a
+            href="/contact"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.9rem 2.5rem',
+              borderRadius: '100px',
+              border: '1px solid var(--border-hover)',
+              color: 'var(--text-1)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent)';
+              e.currentTarget.style.color = 'var(--accent)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-hover)';
+              e.currentTarget.style.color = 'var(--text-1)';
+            }}
+          >
+            Start a Conversation
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

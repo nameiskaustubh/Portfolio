@@ -1,128 +1,187 @@
-import React from "react";
-import {
-  FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaFilePdf
-} from "react-icons/fa";
-import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
+/**
+ * Footer — Dark Theme Version
+ * Matches the cinematic dark portfolio aesthetic.
+ */
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaGithub, FaLinkedin, FaEnvelope, FaFilePdf } from 'react-icons/fa';
+import { SiLeetcode, SiGeeksforgeeks } from 'react-icons/si';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-6 py-16">
+    <footer
+      style={{
+        background: 'var(--bg-1)',
+        borderTop: '1px solid var(--border)',
+        padding: '5rem 2.5rem 3rem',
+      }}
+    >
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        {/* Top Section */}
-        <div className="grid md:grid-cols-3 gap-12 mb-16">
-
+        {/* Top */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '3rem',
+            marginBottom: '4rem',
+          }}
+        >
           {/* Identity */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-slate-900">
-              Kaustubh Deshmukh
-            </h3>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-sm">
-              Assistant Professor at R.H. Sapat College of Engineering, Nashik.
-              Frontend Engineer focused on React systems, teaching engineering
-              fundamentals, and preparing students for real-world development.
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '2rem',
+                letterSpacing: '0.06em',
+                color: 'var(--text-1)',
+                marginBottom: '0.75rem',
+              }}
+            >
+              KD
+            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.85rem',
+                color: 'var(--text-3)',
+                lineHeight: 1.7,
+                maxWidth: '260px',
+              }}
+            >
+              Assistant Professor at R.H. Sapat College of Engineering,
+              Nashik. Full-stack engineer building production systems and
+              teaching engineers how to think.
             </p>
           </div>
 
-          {/* Professional Links */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
-              Professional Presence
-            </h4>
-
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a
-                  href="https://linkedin.com/in/kaustubh-deshmukh8851"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-                >
-                  <FaLinkedin /> LinkedIn
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="https://github.com/nameiskaustubh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-                >
-                  <FaGithub /> GitHub
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="https://leetcode.com/afcpwRGndV"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-                >
-                  <SiLeetcode /> LeetCode
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="https://auth.geeksforgeeks.org/user/kaustubhvde2feq"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-                >
-                  <SiGeeksforgeeks /> GeeksforGeeks
-                </a>
-              </li>
+          {/* Pages */}
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.65rem',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'var(--text-3)',
+                marginBottom: '1.25rem',
+              }}
+            >
+              Navigate
+            </div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { path: '/work',        label: 'Work' },
+                { path: '/teaching',    label: 'Teaching' },
+                { path: '/capabilities', label: 'Capabilities' },
+                { path: '/dsa',         label: 'DSA' },
+                { path: '/contact',     label: 'Contact' },
+              ].map(({ path, label }) => (
+                <li key={path}>
+                  <Link
+                    to={path}
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.875rem',
+                      color: 'var(--text-3)',
+                      textDecoration: 'none',
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-1)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-3)')}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Collaboration */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
-              Collaboration
-            </h4>
-
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Open to academic partnerships, technical consulting, mentorship,
-              and frontend engineering projects.
-            </p>
-
-            <div className="flex flex-col gap-3 text-sm">
-              <a
-                href="mailto:kaustubhvdeshmukh2001@gmail.com"
-                className="inline-flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-              >
-                <FaEnvelope /> Email
-              </a>
-
-              <a
-                href="/assets/Kaustubh_Deshmukh_Resume1.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 text-slate-700 hover:text-slate-900 transition"
-              >
-                <FaFilePdf /> View Resume
-              </a>
+          {/* Social */}
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.65rem',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'var(--text-3)',
+                marginBottom: '1.25rem',
+              }}
+            >
+              Connect
             </div>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {[
+                { icon: <FaLinkedin />, label: 'LinkedIn',    href: 'https://linkedin.com/in/kaustubh-deshmukh8851' },
+                { icon: <FaGithub />,   label: 'GitHub',      href: 'https://github.com/nameiskaustubh' },
+                { icon: <SiLeetcode />, label: 'LeetCode',    href: 'https://leetcode.com/afcpwRGndV' },
+                { icon: <FaEnvelope />, label: 'Email',        href: 'mailto:kaustubhvdeshmukh2001@gmail.com' },
+                { icon: <FaFilePdf />,  label: 'Resume',       href: '/assets/Kaustubh_Deshmukh_Resume1.pdf' },
+              ].map(({ icon, label, href }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.875rem',
+                      color: 'var(--text-3)',
+                      textDecoration: 'none',
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-1)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-3)')}
+                  >
+                    <span style={{ fontSize: '0.9rem' }}>{icon}</span>
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-          <p>
-            © {currentYear} Kaustubh Deshmukh. All rights reserved.
+        {/* Bottom bar */}
+        <div
+          style={{
+            paddingTop: '2rem',
+            borderTop: '1px solid var(--border)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.08em',
+              color: 'var(--text-3)',
+            }}
+          >
+            © {year} Kaustubh Deshmukh. All rights reserved.
           </p>
-          <p>
-            Built with React • Tailwind CSS • Framer Motion
+          <p
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.08em',
+              color: 'var(--text-3)',
+            }}
+          >
+            React · GSAP · Framer Motion · Lenis
           </p>
         </div>
-
       </div>
     </footer>
   );

@@ -1,0 +1,536 @@
+/* ============================================
+   PORTFOLIO V2 — GLOBAL STYLES
+   Dark Cinematic Theme
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import "tailwindcss";
+
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+:root {
+  /* Background */
+  --bg-0: #020205;
+  --bg-1: #08080f;
+  --bg-2: #0f0f1a;
+  --bg-glass: rgba(255, 255, 255, 0.03);
+
+  /* Accent Colors */
+  --accent: #818cf8;          /* indigo */
+  --accent-warm: #fbbf24;     /* amber */
+  --accent-cyan: #22d3ee;     /* cyan */
+  --accent-glow: rgba(129, 140, 248, 0.2);
+
+  /* Text */
+  --text-1: #f0f0f5;
+  --text-2: #9ca3af;
+  --text-3: #6b7280;
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.15);
+
+  /* Fonts */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-slow: 700ms;
+  --duration-cinematic: 1200ms;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles this */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none; /* Custom cursor */
+}
+
+/* Hide default cursor on all interactive elements */
+a, button, [role="button"], input, textarea, select {
+  cursor: none;
+}
+
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   Applied on body::before for premium feel
+   ============================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================
+   CUSTOM CURSOR
+   ============================================ */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--text-1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s var(--ease-smooth), 
+              height 0.2s var(--ease-smooth),
+              background 0.2s var(--ease-smooth);
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s var(--ease-smooth), 
+              height 0.4s var(--ease-smooth),
+              border-color 0.3s ease,
+              opacity 0.3s ease;
+  will-change: transform;
+}
+
+.cursor-dot.cursor-hover {
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+}
+
+.cursor-ring.cursor-hover {
+  width: 60px;
+  height: 60px;
+  border-color: var(--accent);
+  opacity: 0.6;
+}
+
+.cursor-dot.cursor-link {
+  width: 4px;
+  height: 4px;
+}
+
+.cursor-ring.cursor-link {
+  width: 48px;
+  height: 48px;
+  background: rgba(129, 140, 248, 0.08);
+  border-color: var(--accent);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.font-display { font-family: var(--font-display); }
+.font-body    { font-family: var(--font-body); }
+.font-mono    { font-family: var(--font-mono); }
+
+/* Display headings using Bebas Neue */
+.heading-xl {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 14rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+
+.heading-lg {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 8rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+.heading-md {
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* ============================================
+   GLASS PANELS
+   ============================================ */
+.glass {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass:hover {
+  border-color: var(--border-hover);
+}
+
+/* ============================================
+   GLOW EFFECTS
+   ============================================ */
+.glow-indigo {
+  box-shadow: 0 0 40px rgba(129, 140, 248, 0.15),
+              0 0 80px rgba(129, 140, 248, 0.05);
+}
+
+.glow-text {
+  text-shadow: 0 0 40px rgba(129, 140, 248, 0.5);
+}
+
+/* ============================================
+   GRADIENT MESH BACKGROUND
+   ============================================ */
+.gradient-mesh {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-mesh::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 80% at 10% 20%, rgba(129,140,248,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 80%, rgba(251,191,36,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 50% 50%, rgba(34,211,238,0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   ANIMATED GRADIENT BORDER
+   ============================================ */
+@keyframes border-rotate {
+  from { --border-angle: 0deg; }
+  to   { --border-angle: 360deg; }
+}
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  border: 1px solid transparent;
+  background: linear-gradient(var(--bg-1), var(--bg-1)) padding-box,
+              conic-gradient(from var(--border-angle), 
+                transparent 70%, 
+                var(--accent) 80%, 
+                var(--accent-warm) 90%, 
+                transparent 100%) border-box;
+  animation: border-rotate 4s linear infinite;
+}
+
+/* ============================================
+   SCROLL REVEAL BASE STATES
+   (GSAP animates these)
+   ============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(60px);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* ============================================
+   SPLIT TEXT — each char/word gets this
+   ============================================ */
+.split-char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.split-word-inner {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+/* ============================================
+   PROGRESS / LOADING BAR
+   ============================================ */
+.progress-bar {
+  height: 1px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-cinematic) var(--ease-smooth);
+}
+
+/* ============================================
+   PROJECT CARDS
+   ============================================ */
+.project-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  transition: border-color var(--duration-base) var(--ease-smooth),
+              transform var(--duration-base) var(--ease-smooth);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.project-card:hover {
+  border-color: var(--border-hover);
+}
+
+.project-card-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: conic-gradient(from 0deg, var(--accent), var(--accent-warm), var(--accent));
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-smooth);
+  z-index: -1;
+}
+
+.project-card:hover .project-card-glow {
+  opacity: 0.3;
+}
+
+/* ============================================
+   HORIZONTAL SCROLL TRACK
+   ============================================ */
+.h-scroll-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.h-scroll-track {
+  display: flex;
+  gap: 2rem;
+  will-change: transform;
+}
+
+/* ============================================
+   MAGNETIC BUTTON
+   ============================================ */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) ease;
+  will-change: transform;
+}
+
+.magnetic-btn::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  opacity: 0;
+  background: var(--accent-glow);
+  transition: opacity var(--duration-base) var(--ease-smooth);
+}
+
+.magnetic-btn:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   SECTION DIVIDER
+   ============================================ */
+.section-line {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--border-hover) 20%, 
+    var(--border-hover) 80%, 
+    transparent);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-0);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+::selection {
+  background: rgba(129, 140, 248, 0.25);
+  color: var(--text-1);
+}
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-20px) rotate(1deg); }
+  66%       { transform: translateY(-10px) rotate(-1deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(129,140,248,0.2); }
+  50%       { box-shadow: 0 0 40px rgba(129,140,248,0.5), 0 0 80px rgba(129,140,248,0.2); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.float { animation: float 6s ease-in-out infinite; }
+.pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.blink { animation: blink 1s step-end infinite; }
+
+/* ============================================
+   LOADER
+   ============================================ */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-0);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#loader .scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: scan-line 2s linear infinite;
+  opacity: 0.5;
+}
+
+/* ============================================
+   ORBIT ANIMATION (Skills)
+   ============================================ */
+@keyframes orbit {
+  from { transform: rotate(var(--start-angle, 0deg)) translateX(var(--orbit-r, 120px)) rotate(calc(-1 * var(--start-angle, 0deg))); }
+  to   { transform: rotate(calc(var(--start-angle, 0deg) + 360deg)) translateX(var(--orbit-r, 120px)) rotate(calc(-1 * (var(--start-angle, 0deg) + 360deg))); }
+}
+
+.orbit-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  animation: orbit var(--orbit-speed, 8s) linear infinite;
+  margin-top: -20px;
+  margin-left: -20px;
+}
+
+/* ============================================
+   UTILITY
+   ============================================ */
+.clip-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--text-1) 0%, var(--accent) 50%, var(--accent-warm) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-accent { color: var(--accent); }
+.text-warm   { color: var(--accent-warm); }
+.text-muted  { color: var(--text-2); }
+.text-subtle { color: var(--text-3); }
+
+.bg-card { background: var(--bg-1); }
+.bg-panel { background: var(--bg-2); }
