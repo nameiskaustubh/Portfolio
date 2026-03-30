@@ -1,18 +1,13 @@
 /**
  * Home.jsx — Cinematic Hero + Scroll Journey
- * 
- * Sections:
- *  1. Hero — Full-screen, GSAP split text reveal, floating role tags
- *  2. Ticker — Scrolling marquee of skills
- *  3. Stats — Animated counters
- *  4. Philosophy — Reveal on scroll with parallax
- *  5. What I Do — Bento grid
- *  6. Manifesto — Dark cinematic section
- *  7. Stack — Tech logos grid
- *  8. CTA
+ * v2.1 — Full mobile responsiveness fix
+ *
+ * Strategy: inject a <style> block for media-query-driven layout.
+ * Inline styles handle theming; CSS classes handle breakpoints.
+ * useWindowSize hook drives GSAP-side conditionals only.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
@@ -24,7 +19,24 @@ import MagneticButton from '../components/MagneticButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ---- Animated counter ---- */
+/* ============================================================
+   Responsive hook — avoids SSR issues
+   ============================================================ */
+function useWindowSize() {
+  const [width, setWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler, { passive: true });
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return width;
+}
+
+/* ============================================================
+   Animated counter
+   ============================================================ */
 const StatCounter = ({ target, suffix, label }) => {
   const ref = useRef(null);
   useCountUp(ref, target, suffix);
@@ -34,7 +46,7 @@ const StatCounter = ({ target, suffix, label }) => {
         ref={ref}
         style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(3rem, 7vw, 6rem)',
+          fontSize: 'clamp(1.8rem, 5vw, 4.5rem)',
           color: 'var(--text-1)',
           lineHeight: 1,
           letterSpacing: '-0.02em',
@@ -42,14 +54,19 @@ const StatCounter = ({ target, suffix, label }) => {
       >
         0{suffix}
       </div>
-      <div className="label" style={{ marginTop: '0.5rem', color: 'var(--text-3)' }}>
+      <div
+        className="label"
+        style={{ marginTop: '0.4rem', color: 'var(--text-3)', fontSize: '0.6rem' }}
+      >
         {label}
       </div>
     </div>
   );
 };
 
-/* ---- Ticker / marquee ---- */
+/* ============================================================
+   Ticker / Marquee
+   ============================================================ */
 const Ticker = ({ items }) => {
   const trackRef = useRef(null);
   useEffect(() => {
@@ -62,19 +79,29 @@ const Ticker = ({ items }) => {
   }, []);
   const doubled = [...items, ...items];
   return (
-    <div style={{ overflow: 'hidden', padding: '1.5rem 0' }}>
+    <div style={{ overflow: 'hidden', padding: '1.25rem 0' }}>
       <div
         ref={trackRef}
-        style={{ display: 'flex', gap: '3rem', whiteSpace: 'nowrap', willChange: 'transform' }}
+        style={{
+          display: 'flex',
+          gap: '2.5rem',
+          whiteSpace: 'nowrap',
+          willChange: 'transform',
+        }}
       >
         {doubled.map((item, i) => (
           <span
             key={i}
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.2rem, 2.5vw, 2rem)',
+              fontSize: 'clamp(1rem, 2.5vw, 2rem)',
               letterSpacing: '0.1em',
-              color: i % 4 === 0 ? 'var(--accent)' : i % 4 === 2 ? 'var(--accent-warm)' : 'var(--text-3)',
+              color:
+                i % 4 === 0
+                  ? 'var(--accent)'
+                  : i % 4 === 2
+                  ? 'var(--accent-warm)'
+                  : 'var(--text-3)',
             }}
           >
             {item}
@@ -86,12 +113,14 @@ const Ticker = ({ items }) => {
 };
 
 const tickerItems = [
-  'React', '★', 'Node.js', '★', 'Firebase', '★', 'Python', '★',
-  'Tailwind', '★', 'GSAP', '★', 'Framer Motion', '★', 'MySQL', '★',
-  'DSA', '★', 'Teaching', '★', 'System Design', '★', 'Mentorship',
+  'React','★','Node.js','★','Firebase','★','Python','★',
+  'Tailwind','★','GSAP','★','Framer Motion','★','MySQL','★',
+  'DSA','★','Teaching','★','System Design','★','Mentorship',
 ];
 
-/* ---- Bento card ---- */
+/* ============================================================
+   Bento card
+   ============================================================ */
 const BentoCard = ({ title, items, accent, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 30 }}
@@ -102,27 +131,27 @@ const BentoCard = ({ title, items, accent, delay = 0 }) => (
       background: 'var(--bg-1)',
       border: '1px solid var(--border)',
       borderRadius: '16px',
-      padding: '2rem',
+      padding: '1.25rem',
       transition: 'border-color 0.3s ease',
     }}
-    whileHover={{ borderColor: 'var(--border-hover)', scale: 1.01 }}
+    whileHover={{ borderColor: 'var(--border-hover)' }}
   >
     <div
       style={{
-        width: '32px',
+        width: '24px',
         height: '3px',
         background: accent || 'var(--accent)',
         borderRadius: '2px',
-        marginBottom: '1.25rem',
+        marginBottom: '0.875rem',
       }}
     />
     <h3
       style={{
         fontFamily: 'var(--font-body)',
-        fontSize: '1rem',
+        fontSize: '0.9rem',
         fontWeight: 700,
         color: 'var(--text-1)',
-        marginBottom: '1rem',
+        marginBottom: '0.65rem',
       }}
     >
       {title}
@@ -133,11 +162,11 @@ const BentoCard = ({ title, items, accent, delay = 0 }) => (
           key={i}
           style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.78rem',
+            fontSize: '0.68rem',
             color: 'var(--text-3)',
-            padding: '0.3rem 0',
+            padding: '0.2rem 0',
             borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.04em',
           }}
         >
           {item}
@@ -147,13 +176,21 @@ const BentoCard = ({ title, items, accent, delay = 0 }) => (
   </motion.div>
 );
 
+/* ============================================================
+   Main Component
+   ============================================================ */
 const Home = () => {
+  const windowWidth = useWindowSize();
+  const isMobile    = windowWidth < 768;
+  const isTablet    = windowWidth < 1024;
+
   const heroRef      = useRef(null);
   const nameRef      = useRef(null);
   const taglineRef   = useRef(null);
   const tagsRef      = useRef(null);
   const imgRef       = useRef(null);
   const scrollIndRef = useRef(null);
+  const blobRef      = useRef(null);
   const cta1Ref      = useMagneticHover();
   const cta2Ref      = useMagneticHover();
 
@@ -162,27 +199,24 @@ const Home = () => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.2 });
 
-      // Name — slice in from below
       const nameEl = nameRef.current;
       if (nameEl) {
-        const text = nameEl.textContent;
-        const words = text.split(' ');
+        const words = nameEl.textContent.trim().split(' ');
         nameEl.innerHTML = words
           .map(
             (w) =>
-              `<span class="split-word"><span class="split-word-inner">${w}</span></span>`
+              `<span style="overflow:hidden;display:inline-block;"><span class="split-word-inner" style="display:inline-block;transform:translateY(100%);">${w}</span></span>`
           )
           .join(' ');
 
         tl.to('.split-word-inner', {
           y: 0,
           duration: 1,
-          stagger: 0.12,
+          stagger: 0.1,
           ease: 'power4.out',
         });
       }
 
-      // Tagline
       tl.fromTo(
         taglineRef.current,
         { opacity: 0, y: 20 },
@@ -190,38 +224,42 @@ const Home = () => {
         '-=0.5'
       );
 
-      // Role tags
-      tl.fromTo(
-        tagsRef.current?.children || [],
-        { opacity: 0, scale: 0.85, y: 10 },
-        { opacity: 1, scale: 1, y: 0, stagger: 0.08, duration: 0.5, ease: 'back.out(1.4)' },
-        '-=0.5'
-      );
+      const tagEls = tagsRef.current?.children;
+      if (tagEls?.length) {
+        tl.fromTo(
+          tagEls,
+          { opacity: 0, scale: 0.85, y: 10 },
+          { opacity: 1, scale: 1, y: 0, stagger: 0.07, duration: 0.5, ease: 'back.out(1.4)' },
+          '-=0.5'
+        );
+      }
 
-      // Profile image
-      tl.fromTo(
-        imgRef.current,
-        { opacity: 0, scale: 0.95, y: 20 },
-        { opacity: 1, scale: 1, y: 0, duration: 1, ease: 'power3.out' },
-        '-=0.8'
-      );
+      if (imgRef.current) {
+        tl.fromTo(
+          imgRef.current,
+          { opacity: 0, scale: 0.95, y: 20 },
+          { opacity: 1, scale: 1, y: 0, duration: 1, ease: 'power3.out' },
+          '-=0.8'
+        );
+      }
 
-      // Scroll indicator
-      tl.fromTo(
-        scrollIndRef.current,
-        { opacity: 0, y: -10 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        '-=0.3'
-      );
+      if (scrollIndRef.current) {
+        tl.fromTo(
+          scrollIndRef.current,
+          { opacity: 0, y: -10 },
+          { opacity: 1, y: 0, duration: 0.6 },
+          '-=0.3'
+        );
+      }
     }, heroRef);
 
     return () => ctx.revert();
   }, []);
 
-  /* ---- Parallax on hero bg blob ---- */
-  const blobRef = useRef(null);
+  /* ---- Parallax blob ---- */
   useEffect(() => {
-    gsap.to(blobRef.current, {
+    if (!blobRef.current || isMobile) return;
+    const t = gsap.to(blobRef.current, {
       y: -120,
       ease: 'none',
       scrollTrigger: {
@@ -231,34 +269,139 @@ const Home = () => {
         scrub: true,
       },
     });
-  }, []);
+    return () => t.kill();
+  }, [isMobile]);
+
+  /* ---- Image size ---- */
+  const imgSize = isMobile ? '150px' : isTablet ? '200px' : 'clamp(220px, 22vw, 290px)';
 
   return (
     <div style={{ background: 'var(--bg-0)', color: 'var(--text-1)' }}>
 
-      {/* ============================
-          HERO
-          ============================ */}
+      {/* ── Responsive CSS ── */}
+      <style>{`
+        /* ---- Hero grid ---- */
+        .hero-grid {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 3rem;
+          align-items: center;
+          max-width: 1300px;
+          margin: 0 auto;
+          padding: 0 2.5rem;
+          width: 100%;
+        }
+        /* Tablet */
+        @media (max-width: 1023px) {
+          .hero-grid { padding: 0 2rem; gap: 2rem; }
+        }
+        /* Mobile — single column, image stacks above text */
+        @media (max-width: 767px) {
+          .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+            padding: 0 1.25rem;
+          }
+          .hero-img-col { order: -1; display: flex; justify-content: center; }
+          .hero-text-col { order: 1; text-align: center; }
+          .hero-tags  { justify-content: center !important; }
+          .hero-ctas  { justify-content: center !important; }
+        }
+
+        /* ---- Stats row ---- */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+          padding: 2.5rem 2rem;
+          background: var(--bg-1);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+        }
+        @media (max-width: 767px) {
+          .stats-grid { padding: 1.75rem 1rem; gap: 0.5rem; }
+        }
+
+        /* ---- Philosophy cards ---- */
+        .philosophy-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 1px;
+        }
+        @media (max-width: 767px) {
+          .philosophy-grid { gap: 0.75rem; }
+          .phil-card-inner { border-radius: 14px !important; }
+        }
+
+        /* ---- Bento grid ---- */
+        .bento-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 0.875rem;
+        }
+        @media (max-width: 479px) {
+          .bento-grid { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+        }
+
+        /* ---- Stack grid ---- */
+        .stack-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+          gap: 1.5rem;
+        }
+        @media (max-width: 479px) {
+          .stack-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        }
+
+        /* ---- Section padding ---- */
+        .sec-lg { padding: 8rem 2.5rem; }
+        .sec-md { padding: 6rem 2.5rem; }
+        @media (max-width: 767px) {
+          .sec-lg { padding: 4rem 1.25rem; }
+          .sec-md { padding: 3.5rem 1.25rem; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .sec-lg { padding: 6rem 2rem; }
+          .sec-md { padding: 4rem 2rem; }
+        }
+
+        /* ---- Shared inner wrapper ---- */
+        .hw-inner { max-width: 1100px; margin: 0 auto; }
+
+        /* ---- CTA row ---- */
+        .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        @media (max-width: 380px) {
+          .cta-row { flex-direction: column; align-items: stretch; }
+          .cta-row a { width: 100% !important; justify-content: center; }
+        }
+
+        /* ---- Scroll indicator hidden on mobile ---- */
+        @media (max-width: 767px) {
+          .scroll-ind { display: none !important; }
+        }
+      `}</style>
+
+      {/* ══════════════ HERO ══════════════ */}
       <section
         ref={heroRef}
         style={{
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
-          padding: '8rem 0 4rem',
+          padding: isMobile ? '6rem 0 3rem' : '8rem 0 4rem',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Background gradient blobs */}
+        {/* BG blobs */}
         <div
           ref={blobRef}
           style={{
             position: 'absolute',
             top: '10%',
             right: '-10%',
-            width: '600px',
-            height: '600px',
+            width: isMobile ? '300px' : '500px',
+            height: isMobile ? '300px' : '500px',
             background:
               'radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 65%)',
             pointerEvents: 'none',
@@ -270,52 +413,43 @@ const Home = () => {
             position: 'absolute',
             bottom: '10%',
             left: '-5%',
-            width: '400px',
-            height: '400px',
+            width: '350px',
+            height: '350px',
             background:
               'radial-gradient(circle, rgba(251,191,36,0.05) 0%, transparent 65%)',
             pointerEvents: 'none',
           }}
         />
 
-        <div
-          style={{
-            maxWidth: '1300px',
-            margin: '0 auto',
-            padding: '0 2.5rem',
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto',
-            gap: '4rem',
-            alignItems: 'center',
-          }}
-        >
-          {/* Left — Text */}
-          <div>
-            {/* Label */}
+        {/* ── Grid ── */}
+        <div className="hero-grid">
+          {/* Text column */}
+          <div className="hero-text-col">
+            {/* Status pill */}
             <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                marginBottom: '1.5rem',
+                gap: '0.6rem',
+                marginBottom: '1.25rem',
               }}
             >
               <span
                 style={{
-                  width: '8px',
-                  height: '8px',
+                  width: '7px',
+                  height: '7px',
                   borderRadius: '50%',
                   background: 'var(--accent)',
-                  boxShadow: '0 0 12px var(--accent)',
+                  boxShadow: '0 0 10px var(--accent)',
                   animation: 'pulse-glow 2s infinite',
+                  flexShrink: 0,
                 }}
               />
               <span
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '0.72rem',
-                  letterSpacing: '0.2em',
+                  fontSize: '0.65rem',
+                  letterSpacing: '0.16em',
                   textTransform: 'uppercase',
                   color: 'var(--text-3)',
                 }}
@@ -324,17 +458,20 @@ const Home = () => {
               </span>
             </div>
 
-            {/* Name — GSAP splits this */}
+            {/* Name */}
             <h1
               ref={nameRef}
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(4rem, 10vw, 10rem)',
-                lineHeight: 0.9,
+                fontSize: isMobile
+                  ? 'clamp(2.6rem, 11vw, 4.5rem)'
+                  : 'clamp(3.5rem, 7vw, 8.5rem)',
+                lineHeight: 0.92,
                 letterSpacing: '0.01em',
                 color: 'var(--text-1)',
-                marginBottom: '1.5rem',
-                overflow: 'hidden',
+                marginBottom: '1.25rem',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
               }}
             >
               KAUSTUBH DESHMUKH
@@ -345,38 +482,44 @@ const Home = () => {
               ref={taglineRef}
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-                fontWeight: 400,
+                fontSize: isMobile ? '0.92rem' : 'clamp(0.95rem, 1.6vw, 1.1rem)',
                 color: 'var(--text-2)',
-                maxWidth: '580px',
-                lineHeight: 1.7,
-                marginBottom: '2.5rem',
+                maxWidth: isMobile ? '100%' : '520px',
+                lineHeight: 1.75,
+                marginBottom: '1.75rem',
                 opacity: 0,
               }}
             >
-              I teach engineers how to think, build production systems that last,
-              and bridge the gap between academic rigor and real-world software.
+              I teach engineers how to think, build production systems that
+              last, and bridge the gap between academic rigor and real-world
+              software.
             </p>
 
             {/* Role tags */}
             <div
               ref={tagsRef}
-              style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '3rem' }}
+              className="hero-tags"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.45rem',
+                marginBottom: '2.25rem',
+              }}
             >
               {[
                 { label: 'Asst. Professor', color: 'var(--accent)' },
-                { label: 'Full-Stack Dev', color: 'var(--accent-warm)' },
-                { label: 'React Engineer', color: 'var(--accent-cyan)' },
+                { label: 'Full-Stack Dev',  color: 'var(--accent-warm)' },
+                { label: 'React Engineer',  color: 'var(--accent-cyan)' },
                 { label: 'MCA Coordinator', color: 'var(--text-3)' },
               ].map(({ label, color }) => (
                 <span
                   key={label}
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.7rem',
-                    letterSpacing: '0.1em',
+                    fontSize: '0.62rem',
+                    letterSpacing: '0.08em',
                     textTransform: 'uppercase',
-                    padding: '0.4rem 0.9rem',
+                    padding: '0.3rem 0.75rem',
                     borderRadius: '100px',
                     background: 'var(--bg-1)',
                     border: `1px solid ${color}30`,
@@ -390,35 +533,43 @@ const Home = () => {
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="hero-ctas cta-row">
               <div ref={cta1Ref}>
                 <Link
                   to="/work"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.6rem',
-                    padding: '0.9rem 2rem',
+                    gap: '0.5rem',
+                    padding: '0.8rem 1.6rem',
                     background: 'var(--text-1)',
                     color: 'var(--bg-0)',
                     borderRadius: '100px',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.75rem',
+                    fontSize: '0.7rem',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     textDecoration: 'none',
                     fontWeight: 600,
-                    transition: 'background 0.3s ease, transform 0.2s ease',
+                    transition: 'background 0.3s ease',
+                    whiteSpace: 'nowrap',
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'var(--accent)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'var(--text-1)';
-                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.background = 'var(--accent)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.background = 'var(--text-1)')
+                  }
                 >
                   View Work
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </Link>
@@ -428,16 +579,17 @@ const Home = () => {
                   to="/contact"
                   style={{
                     display: 'inline-flex',
-                    padding: '0.9rem 2rem',
+                    padding: '0.8rem 1.6rem',
                     borderRadius: '100px',
                     border: '1px solid var(--border-hover)',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.75rem',
+                    fontSize: '0.7rem',
                     letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     textDecoration: 'none',
                     color: 'var(--text-2)',
                     transition: 'border-color 0.3s, color 0.3s',
+                    whiteSpace: 'nowrap',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--accent)';
@@ -454,23 +606,23 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Right — Profile Image */}
-          <div ref={imgRef} style={{ opacity: 0 }}>
+          {/* ── Image column ── */}
+          <div
+            className="hero-img-col"
+            ref={imgRef}
+            style={{ opacity: 0, flexShrink: 0 }}
+          >
             <div
-              className="float"
-              style={{
-                position: 'relative',
-                width: 'clamp(200px, 24vw, 320px)',
-                aspectRatio: '1',
-              }}
+              className={isMobile ? '' : 'float'}
+              style={{ position: 'relative', width: imgSize, height: imgSize }}
             >
-              {/* Rotating border frame */}
+              {/* Animated border */}
               <div
                 className="animated-border"
                 style={{
                   position: 'absolute',
-                  inset: '-8px',
-                  borderRadius: '24px',
+                  inset: '-6px',
+                  borderRadius: isMobile ? '18px' : '22px',
                   opacity: 0.8,
                 }}
               />
@@ -481,52 +633,55 @@ const Home = () => {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  borderRadius: '18px',
+                  objectPosition: 'top center',
+                  borderRadius: isMobile ? '14px' : '18px',
                   filter: 'grayscale(20%) contrast(1.05)',
                   display: 'block',
                 }}
                 onError={(e) => {
                   e.target.parentElement.innerHTML = `
-                    <div style="width:100%;height:100%;background:var(--bg-2);border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:4rem;color:var(--text-3);">KD</div>`;
+                    <div style="width:100%;height:100%;background:var(--bg-2);border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:2.5rem;color:var(--text-3);">KD</div>`;
                 }}
               />
 
-              {/* Experience badge */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '-1rem',
-                  right: '-1rem',
-                  background: 'var(--bg-1)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '12px',
-                  padding: '0.75rem 1rem',
-                  backdropFilter: 'blur(20px)',
-                }}
-              >
+              {/* Experience badge — desktop/tablet only */}
+              {!isMobile && (
                 <div
                   style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.8rem',
-                    color: 'var(--accent)',
-                    lineHeight: 1,
+                    position: 'absolute',
+                    bottom: '-0.75rem',
+                    right: '-0.75rem',
+                    background: 'var(--bg-1)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '10px',
+                    padding: '0.55rem 0.85rem',
+                    backdropFilter: 'blur(20px)',
                   }}
                 >
-                  2+
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1.5rem',
+                      color: 'var(--accent)',
+                      lineHeight: 1,
+                    }}
+                  >
+                    2+
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.52rem',
+                      letterSpacing: '0.1em',
+                      color: 'var(--text-3)',
+                      textTransform: 'uppercase',
+                      marginTop: '0.2rem',
+                    }}
+                  >
+                    Yrs Teaching
+                  </div>
                 </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6rem',
-                    letterSpacing: '0.1em',
-                    color: 'var(--text-3)',
-                    textTransform: 'uppercase',
-                    marginTop: '0.25rem',
-                  }}
-                >
-                  Yrs Teaching
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -534,6 +689,7 @@ const Home = () => {
         {/* Scroll indicator */}
         <div
           ref={scrollIndRef}
+          className="scroll-ind"
           style={{
             position: 'absolute',
             bottom: '2rem',
@@ -546,21 +702,21 @@ const Home = () => {
             opacity: 0,
           }}
         >
-          <div
+          <span
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.6rem',
+              fontSize: '0.57rem',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'var(--text-3)',
             }}
           >
             Scroll
-          </div>
+          </span>
           <div
             style={{
               width: '1px',
-              height: '40px',
+              height: '36px',
               background: 'linear-gradient(to bottom, var(--text-3), transparent)',
               animation: 'float 2s ease-in-out infinite',
             }}
@@ -568,28 +724,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ============================
-          TICKER
-          ============================ */}
-      <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+      {/* ══════════════ TICKER ══════════════ */}
+      <div
+        style={{
+          borderTop: '1px solid var(--border)',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
         <Ticker items={tickerItems} />
       </div>
 
-      {/* ============================
-          STATS
-          ============================ */}
-      <section style={{ padding: '6rem 2.5rem' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* ══════════════ STATS ══════════════ */}
+      <section className="sec-md">
+        <div className="hw-inner">
           <motion.div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '2rem',
-              padding: '3rem 2rem',
-              background: 'var(--bg-1)',
-              border: '1px solid var(--border)',
-              borderRadius: '20px',
-            }}
+            className="stats-grid"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -602,30 +751,28 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ============================
-          PHILOSOPHY
-          ============================ */}
-      <section style={{ padding: '4rem 2.5rem 8rem' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* ══════════════ PHILOSOPHY ══════════════ */}
+      <section className="sec-lg">
+        <div className="hw-inner">
           <div
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'var(--text-3)',
-              marginBottom: '4rem',
+              marginBottom: isMobile ? '2rem' : '3.5rem',
             }}
           >
             How I Think
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2px' }}>
+          <div className="philosophy-grid">
             {[
               {
                 num: '01',
                 title: 'Teaching builds thinking',
-                body: 'Programming instruction means teaching problem decomposition and logic, not just syntax. I prepare students for systems they haven\'t encountered yet.',
+                body: "Programming instruction means teaching problem decomposition and logic, not just syntax. I prepare students for systems they haven't encountered yet.",
                 color: 'var(--accent)',
               },
               {
@@ -646,47 +793,55 @@ const Home = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: i * 0.15 }}
+                transition={{ duration: 0.7, delay: i * 0.12 }}
+                className="phil-card-inner"
                 style={{
-                  padding: '2.5rem',
+                  padding: isMobile ? '1.75rem 1.5rem' : '2.5rem',
                   background: 'var(--bg-1)',
-                  borderRadius: i === 0 ? '16px 0 0 16px' : i === 2 ? '0 16px 16px 0' : '0',
+                  borderRadius:
+                    isMobile
+                      ? '14px'
+                      : i === 0
+                      ? '16px 0 0 16px'
+                      : i === 2
+                      ? '0 16px 16px 0'
+                      : '0',
                   border: '1px solid var(--border)',
                   position: 'relative',
                   overflow: 'hidden',
                 }}
-                whileHover={{ background: 'var(--bg-2)' }}
               >
                 <div
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '5rem',
+                    fontSize: '4rem',
                     color: `${item.color}10`,
                     position: 'absolute',
-                    top: '-1rem',
+                    top: '-0.5rem',
                     right: '1rem',
                     lineHeight: 1,
                     userSelect: 'none',
+                    pointerEvents: 'none',
                   }}
                 >
                   {item.num}
                 </div>
                 <div
                   style={{
-                    width: '24px',
+                    width: '20px',
                     height: '2px',
                     background: item.color,
-                    marginBottom: '1.5rem',
+                    marginBottom: '1.1rem',
                     borderRadius: '1px',
                   }}
                 />
                 <h3
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '1.1rem',
+                    fontSize: '1rem',
                     fontWeight: 700,
                     color: 'var(--text-1)',
-                    marginBottom: '0.75rem',
+                    marginBottom: '0.6rem',
                   }}
                 >
                   {item.title}
@@ -694,7 +849,7 @@ const Home = () => {
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.9rem',
+                    fontSize: '0.84rem',
                     color: 'var(--text-3)',
                     lineHeight: 1.7,
                   }}
@@ -707,23 +862,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ============================
-          BENTO GRID — What I Do
-          ============================ */}
-      <section style={{ padding: '2rem 2.5rem 8rem', background: 'var(--bg-0)' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* ══════════════ BENTO — What I Do ══════════════ */}
+      <section className="sec-md" style={{ background: 'var(--bg-0)' }}>
+        <div className="hw-inner">
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'baseline',
-              marginBottom: '3rem',
+              marginBottom: '2rem',
             }}
           >
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
+                fontSize: '0.68rem',
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
                 color: 'var(--text-3)',
@@ -735,8 +888,8 @@ const Home = () => {
               to="/capabilities"
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '0.7rem',
-                letterSpacing: '0.1em',
+                fontSize: '0.68rem',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: 'var(--accent)',
                 textDecoration: 'none',
@@ -746,28 +899,22 @@ const Home = () => {
             </Link>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '1rem',
-            }}
-          >
+          <div className="bento-grid">
             <BentoCard
               title="Teaching"
-              items={['C Programming', 'Python & PPS', 'First-Year Engineering', 'Algorithmic Thinking']}
+              items={['C Programming', 'Python & PPS', 'First-Year Eng.', 'Algorithmic Thinking']}
               accent="var(--accent)"
               delay={0}
             />
             <BentoCard
               title="Coordination"
-              items={['MCA Major Projects', 'Industry Internships', 'Technical Mentorship', 'Feasibility Review']}
+              items={['MCA Major Projects', 'Industry Internships', 'Tech Mentorship', 'Feasibility Review']}
               accent="var(--accent-warm)"
               delay={0.1}
             />
             <BentoCard
               title="Engineering"
-              items={['React Applications', 'Firebase & Node.js', 'API Design', 'System Architecture']}
+              items={['React Apps', 'Firebase & Node.js', 'API Design', 'System Architecture']}
               accent="var(--accent-cyan)"
               delay={0.2}
             />
@@ -781,16 +928,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ============================
-          MANIFESTO (dark cinematic)
-          ============================ */}
+      {/* ══════════════ MANIFESTO ══════════════ */}
       <section
-        style={{
-          padding: '8rem 2.5rem',
-          background: 'var(--bg-1)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+        className="sec-lg"
+        style={{ background: 'var(--bg-1)', position: 'relative', overflow: 'hidden' }}
       >
         <div
           style={{
@@ -801,7 +942,13 @@ const Home = () => {
             pointerEvents: 'none',
           }}
         />
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
+        <div
+          style={{
+            maxWidth: '860px',
+            margin: '0 auto',
+            position: 'relative',
+          }}
+        >
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -809,53 +956,58 @@ const Home = () => {
             transition={{ duration: 1.5 }}
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 'clamp(1.4rem, 3vw, 2.2rem)',
+              fontSize: 'clamp(1.05rem, 2.8vw, 2rem)',
               fontWeight: 300,
               color: 'var(--text-1)',
-              lineHeight: 1.5,
+              lineHeight: 1.6,
               letterSpacing: '-0.01em',
             }}
-          >
-            I prepare students for industry problems, evaluate project complexity,
-            and make technical decisions that outlast implementation.{' '}
-            <span style={{ color: 'var(--accent)' }}>
-              This requires understanding constraints, consequences,
-              and what matters beyond delivery.
-            </span>
+          >I build real-world applications, design scalable systems, and teach engineers how to think beyond code — bridging the gap between learning and production-ready software.{' '}
+<span style={{ color: 'var(--accent)' }}>
+  Every decision is driven by constraints, trade-offs, and long-term impact.
+</span>
           </motion.p>
         </div>
       </section>
 
-      {/* ============================
-          TECH STACK
-          ============================ */}
-      <section style={{ padding: '8rem 2.5rem' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      {/* ══════════════ TECH STACK ══════════════ */}
+      <section className="sec-lg">
+        <div className="hw-inner">
           <div
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'var(--text-3)',
-              marginBottom: '4rem',
+              marginBottom: isMobile ? '2rem' : '3.5rem',
             }}
           >
             Technical Foundation
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
+          <div className="stack-grid">
             {[
-              { area: 'Languages', skills: ['C', 'C++', 'JavaScript', 'Python', 'SQL'], color: 'var(--accent)' },
-              { area: 'Frontend', skills: ['React', 'Tailwind CSS', 'GSAP', 'Framer Motion', 'Vite'], color: 'var(--accent-warm)' },
-              { area: 'Backend & Data', skills: ['Node.js', 'Express', 'MongoDB', 'MySQL', 'Firebase'], color: 'var(--accent-cyan)' },
-              { area: 'Practices', skills: ['DSA', 'System Design', 'Code Review', 'Agile', 'OBE/NBA'], color: 'var(--text-2)' },
+              {
+                area: 'Languages',
+                skills: ['C', 'C++', 'JavaScript', 'Python', 'SQL'],
+                color: 'var(--accent)',
+              },
+              {
+                area: 'Frontend',
+                skills: ['React', 'Tailwind CSS', 'GSAP', 'Framer Motion', 'Vite'],
+                color: 'var(--accent-warm)',
+              },
+              {
+                area: 'Backend & Data',
+                skills: ['Node.js', 'Express', 'MongoDB', 'MySQL', 'Firebase'],
+                color: 'var(--accent-cyan)',
+              },
+              {
+                area: 'Practices',
+                skills: ['DSA', 'System Design', 'Code Review', 'Agile', 'OBE/NBA'],
+                color: 'var(--text-2)',
+              },
             ].map((cap, i) => (
               <motion.div
                 key={i}
@@ -863,7 +1015,7 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                style={{ borderTop: `2px solid ${cap.color}`, paddingTop: '1.5rem' }}
+                style={{ borderTop: `2px solid ${cap.color}`, paddingTop: '1.25rem' }}
               >
                 <div
                   style={{
@@ -871,7 +1023,7 @@ const Home = () => {
                     fontSize: '0.85rem',
                     fontWeight: 700,
                     color: 'var(--text-1)',
-                    marginBottom: '1rem',
+                    marginBottom: '0.75rem',
                   }}
                 >
                   {cap.area}
@@ -881,10 +1033,10 @@ const Home = () => {
                     key={s}
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
+                      fontSize: '0.7rem',
                       color: 'var(--text-3)',
-                      padding: '0.25rem 0',
-                      letterSpacing: '0.05em',
+                      padding: '0.18rem 0',
+                      letterSpacing: '0.04em',
                     }}
                   >
                     {s}
@@ -896,17 +1048,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ============================
-          CTA
-          ============================ */}
+      {/* ══════════════ CTA ══════════════ */}
       <section
-        style={{
-          padding: '6rem 2.5rem',
-          borderTop: '1px solid var(--border)',
-          textAlign: 'center',
-        }}
+        className="sec-md"
+        style={{ borderTop: '1px solid var(--border)', textAlign: 'center' }}
       >
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '540px', margin: '0 auto' }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -916,7 +1063,7 @@ const Home = () => {
             <div
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2rem, 5vw, 4rem)',
+                fontSize: 'clamp(1.8rem, 5vw, 3.5rem)',
                 letterSpacing: '0.02em',
                 color: 'var(--text-1)',
                 marginBottom: '1rem',
@@ -927,16 +1074,16 @@ const Home = () => {
             <p
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
+                fontSize: '0.92rem',
                 color: 'var(--text-3)',
-                marginBottom: '2.5rem',
-                lineHeight: 1.6,
+                marginBottom: '2rem',
+                lineHeight: 1.65,
               }}
             >
-              Open to collaboration — academic partnerships, frontend consulting,
-              and meaningful mentorship.
+              Open to collaboration — academic partnerships, frontend
+              consulting, and meaningful mentorship.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="cta-row" style={{ justifyContent: 'center' }}>
               <MagneticButton href="/contact" variant="primary">
                 Get in Touch
               </MagneticButton>
