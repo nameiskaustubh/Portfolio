@@ -20,7 +20,7 @@ const courses = [
     code: 'PPS',
     name: 'Programming & Problem Solving',
     language: 'Python',
-    level: 'First-Year MCA',
+    level: 'First-Year Engineering',
     accentColor: 'var(--accent)',
     topics: [
       'Python syntax, data types & operators',
@@ -40,28 +40,32 @@ const courses = [
     ],
   },
   {
-    code: 'CC',
-    name: 'Cloud Computing',
-    language: 'Concepts + AWS/GCP',
-    level: 'Second-Year MCA',
-    accentColor: 'var(--accent-cyan)',
-    topics: [
-      'Cloud service models — IaaS, PaaS, SaaS',
-      'Virtualization & containerization',
-      'AWS and GCP services overview',
-      'Distributed systems fundamentals',
-      'Cloud security and compliance',
-      'Deployment and scaling strategies',
-    ],
-    approach:
-      'Bridging conceptual cloud architecture with practical service usage. Students gain exposure to real cloud environments through guided labs.',
-    outcomes: [
-      'Understand cloud service trade-offs',
-      'Deploy applications to cloud platforms',
-      'Articulate security and cost considerations',
-      'Design scalable distributed architectures',
-    ],
-  },
+  code: 'FPL',
+  name: 'Fundamentals of Programming Languages',
+  language: 'C Programming',
+  level: '1st-Year Engineering',
+  accentColor: 'var(--accent-cyan)',
+
+  topics: [
+    'Problem solving using algorithms and flowcharts',
+    'Basics of C — variables, data types, operators',
+    'Control structures — if-else, loops',
+    'Functions and modular programming',
+    'Arrays and strings',
+    'Pointers and memory concepts',
+    'Structures and file handling'
+  ],
+
+  approach:
+    'Focused on building strong programming fundamentals using C. Emphasis on logic building, step-by-step problem solving, and understanding how code executes at memory level.',
+
+  outcomes: [
+    'Develop strong problem-solving and logical thinking skills',
+    'Write structured and efficient C programs',
+    'Understand memory management and pointers',
+    'Build a solid foundation for advanced programming and DSA'
+  ],
+}
 ];
 
 const responsibilities = [

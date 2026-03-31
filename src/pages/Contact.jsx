@@ -1,12 +1,12 @@
 /**
  * Contact.jsx — Animated Contact Experience
  *
- * Features:
- * - Magnetic input fields (follow cursor within proximity)
- * - Send button with particle burst animation
- * - GSAP-staggered form reveal
- * - Real EmailJS integration preserved
- * - Corner decoration accents
+ * Fixes applied:
+ * 1. SendButton: type="button" to prevent double form submission
+ * 2. emailjs.init() moved to useEffect — called ONCE on mount, not on every submit
+ * 3. inputStyle: cursor changed from 'none' to 'text' so cursor is visible while typing
+ * 4. Added `subject` field to templateParams (template uses {{subject}} but it was never sent)
+ * 5. EmailJS template "From Name" should use {{name}} not {{reply_to}} — fix in dashboard
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -66,6 +66,7 @@ const MagneticField = ({ label, children, required }) => {
   );
 };
 
+// FIX #3: cursor changed from 'none' to 'text' so the text cursor is visible while typing
 const inputStyle = {
   width: '100%',
   padding: '0.85rem 1rem',
@@ -76,7 +77,7 @@ const inputStyle = {
   fontSize: '0.9rem',
   color: 'var(--text-1)',
   borderRadius: '10px',
-  cursor: 'none',
+  cursor: 'text',
 };
 
 /* ---- Send button with ripple ---- */
@@ -87,7 +88,6 @@ const SendButton = ({ isSubmitting, onClick }) => {
     const btn = btnRef.current;
     if (!btn) return;
 
-    // Ripple
     const ripple = document.createElement('span');
     const rect = btn.getBoundingClientRect();
     ripple.style.cssText = `
@@ -109,6 +109,7 @@ const SendButton = ({ isSubmitting, onClick }) => {
   return (
     <motion.button
       ref={btnRef}
+      type="button" // FIX #1: prevents double form submission (default is type="submit")
       onClick={handleClick}
       disabled={isSubmitting}
       whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
@@ -127,7 +128,7 @@ const SendButton = ({ isSubmitting, onClick }) => {
         fontSize: '0.8rem',
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
-        cursor: isSubmitting ? 'not-allowed' : 'none',
+        cursor: isSubmitting ? 'not-allowed' : 'pointer',
         overflow: 'hidden',
         transition: 'background 0.3s ease',
         boxShadow: isSubmitting ? 'none' : '0 4px 24px rgba(129,140,248,0.3)',
@@ -170,8 +171,14 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
 
-  // GSAP form reveal
   useEffect(() => {
+    // FIX #2: emailjs.init() moved here — called ONCE on mount, not on every form submit.
+    // Calling it inside handleSubmit was wasteful and could cause race conditions.
+    if (window.emailjs) {
+      window.emailjs.init('Q-h55re78pcIna9G1');
+    }
+
+    // GSAP form reveal
     const ctx = gsap.context(() => {
       gsap.fromTo(
         formRef.current?.children || [],
@@ -203,9 +210,17 @@ const Contact = () => {
       organization: formData.organization,
       inquiry: formData.inquiry,
       message: formData.message,
+      // FIX #4: Added `subject` — your EmailJS template uses {{subject}} but it was
+      // never included in templateParams, so the subject line was always blank.
+      subject: `[${formData.inquiry || 'General'}] Message from ${formData.name}`,
       reply_to: formData.email,
       time: new Date().toLocaleString(),
     };
+
+    // NOTE — EmailJS Dashboard Fix #5:
+    // Change "From Name" in your template from {{reply_to}} to {{name}}.
+    // {{reply_to}} is an email address, so the sender was showing as an email
+    // instead of the person's actual name. Fix this directly in the dashboard.
 
     try {
       await emailjs.send(
@@ -275,7 +290,6 @@ const Contact = () => {
         >
           {/* Left — Form */}
           <div>
-            {/* Status messages */}
             <AnimatePresence>
               {submitStatus === 'success' && (
                 <motion.div
@@ -368,6 +382,7 @@ const Contact = () => {
                   style={{
                     ...inputStyle,
                     appearance: 'none',
+                    cursor: 'pointer',
                   }}
                 >
                   <option value="" style={{ background: 'var(--bg-1)' }}>Select type</option>
