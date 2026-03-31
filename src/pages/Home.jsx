@@ -678,7 +678,7 @@ const Home = () => {
                       marginTop: '0.2rem',
                     }}
                   >
-                    Yrs Teaching
+                    Yrs 
                   </div>
                 </div>
               )}
