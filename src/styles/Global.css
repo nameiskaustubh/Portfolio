@@ -1,6 +1,13 @@
 /* ============================================
-   PORTFOLIO V2 — GLOBAL STYLES
+   PORTFOLIO — GLOBAL STYLES
    Dark Cinematic Theme
+
+   FIXES APPLIED:
+   #21 — cursor:none removed from input, textarea, select.
+          These elements now show the native text cursor.
+          Custom cursor handles interactive state via JS delegation.
+   #14 — @property declarations added for --start-angle and --orbit-r
+          so CSS var() inside @keyframes works in Safari and Firefox.
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
@@ -10,33 +17,27 @@
    CSS CUSTOM PROPERTIES
    ============================================ */
 :root {
-  /* Background */
   --bg-0: #020205;
   --bg-1: #08080f;
   --bg-2: #0f0f1a;
   --bg-glass: rgba(255, 255, 255, 0.03);
 
-  /* Accent Colors */
-  --accent: #818cf8;          /* indigo */
-  --accent-warm: #fbbf24;     /* amber */
-  --accent-cyan: #22d3ee;     /* cyan */
+  --accent: #818cf8;
+  --accent-warm: #fbbf24;
+  --accent-cyan: #22d3ee;
   --accent-glow: rgba(129, 140, 248, 0.2);
 
-  /* Text */
   --text-1: #f0f0f5;
   --text-2: #9ca3af;
   --text-3: #6b7280;
 
-  /* Borders */
   --border: rgba(255, 255, 255, 0.07);
   --border-hover: rgba(255, 255, 255, 0.15);
 
-  /* Fonts */
   --font-display: 'Bebas Neue', sans-serif;
   --font-body: 'Manrope', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Motion */
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
@@ -45,6 +46,30 @@
   --duration-base: 400ms;
   --duration-slow: 700ms;
   --duration-cinematic: 1200ms;
+}
+
+/* ============================================
+   FIX #14: Register CSS custom properties used
+   inside @keyframes for cross-browser support.
+   Without @property, Safari and Firefox cannot
+   resolve var() inside animation keyframes.
+   ============================================ */
+@property --start-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --orbit-r {
+  syntax: '<length>';
+  initial-value: 120px;
+  inherits: false;
+}
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
 }
 
 /* ============================================
@@ -57,7 +82,7 @@
 }
 
 html {
-  scroll-behavior: auto; /* Lenis handles this */
+  scroll-behavior: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -69,17 +94,40 @@ body {
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
-  cursor: none; /* Custom cursor */
+  cursor: none;
 }
 
-/* Hide default cursor on all interactive elements */
-a, button, [role="button"], input, textarea, select {
+/* FIX #21: Only suppress cursor on clickable elements, NOT text inputs.
+   input, textarea, select are intentionally excluded so the OS text
+   cursor (I-beam) remains visible while typing. */
+a, button, [role="button"] {
   cursor: none;
+}
+
+/* Text inputs: restore native OS cursor */
+input,
+textarea,
+select {
+  cursor: auto;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="password"],
+textarea {
+  cursor: text;
+}
+
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+select {
+  cursor: pointer;
 }
 
 /* ============================================
    NOISE TEXTURE OVERLAY
-   Applied on body::before for premium feel
    ============================================ */
 body::before {
   content: '';
@@ -106,7 +154,7 @@ body::before {
   pointer-events: none;
   z-index: 10001;
   transform: translate(-50%, -50%);
-  transition: width 0.2s var(--ease-smooth), 
+  transition: width 0.2s var(--ease-smooth),
               height 0.2s var(--ease-smooth),
               background 0.2s var(--ease-smooth);
   will-change: transform;
@@ -122,32 +170,17 @@ body::before {
   pointer-events: none;
   z-index: 10000;
   transform: translate(-50%, -50%);
-  transition: width 0.4s var(--ease-smooth), 
+  transition: width 0.4s var(--ease-smooth),
               height 0.4s var(--ease-smooth),
               border-color 0.3s ease,
               opacity 0.3s ease;
   will-change: transform;
 }
 
-.cursor-dot.cursor-hover {
-  width: 12px;
-  height: 12px;
-  background: var(--accent);
-}
-
-.cursor-ring.cursor-hover {
-  width: 60px;
-  height: 60px;
-  border-color: var(--accent);
-  opacity: 0.6;
-}
-
-.cursor-dot.cursor-link {
-  width: 4px;
-  height: 4px;
-}
-
-.cursor-ring.cursor-link {
+.cursor-dot.cursor-hover  { width: 12px; height: 12px; background: var(--accent); }
+.cursor-ring.cursor-hover { width: 60px; height: 60px; border-color: var(--accent); opacity: 0.6; }
+.cursor-dot.cursor-link   { width: 4px; height: 4px; }
+.cursor-ring.cursor-link  {
   width: 48px;
   height: 48px;
   background: rgba(129, 140, 248, 0.08);
@@ -161,7 +194,6 @@ body::before {
 .font-body    { font-family: var(--font-body); }
 .font-mono    { font-family: var(--font-mono); }
 
-/* Display headings using Bebas Neue */
 .heading-xl {
   font-family: var(--font-display);
   font-size: clamp(5rem, 14vw, 14rem);
@@ -202,10 +234,7 @@ body::before {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
-
-.glass:hover {
-  border-color: var(--border-hover);
-}
+.glass:hover { border-color: var(--border-hover); }
 
 /* ============================================
    GLOW EFFECTS
@@ -214,24 +243,17 @@ body::before {
   box-shadow: 0 0 40px rgba(129, 140, 248, 0.15),
               0 0 80px rgba(129, 140, 248, 0.05);
 }
-
-.glow-text {
-  text-shadow: 0 0 40px rgba(129, 140, 248, 0.5);
-}
+.glow-text { text-shadow: 0 0 40px rgba(129, 140, 248, 0.5); }
 
 /* ============================================
    GRADIENT MESH BACKGROUND
    ============================================ */
-.gradient-mesh {
-  position: relative;
-  overflow: hidden;
-}
-
+.gradient-mesh { position: relative; overflow: hidden; }
 .gradient-mesh::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: 
+  background:
     radial-gradient(ellipse 80% 80% at 10% 20%, rgba(129,140,248,0.06) 0%, transparent 60%),
     radial-gradient(ellipse 60% 60% at 90% 80%, rgba(251,191,36,0.04) 0%, transparent 60%),
     radial-gradient(ellipse 70% 70% at 50% 50%, rgba(34,211,238,0.03) 0%, transparent 60%);
@@ -247,75 +269,39 @@ body::before {
   to   { --border-angle: 360deg; }
 }
 
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
 .animated-border {
   border: 1px solid transparent;
-  background: linear-gradient(var(--bg-1), var(--bg-1)) padding-box,
-              conic-gradient(from var(--border-angle), 
-                transparent 70%, 
-                var(--accent) 80%, 
-                var(--accent-warm) 90%, 
-                transparent 100%) border-box;
+  background:
+    linear-gradient(var(--bg-1), var(--bg-1)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      transparent 70%,
+      var(--accent) 80%,
+      var(--accent-warm) 90%,
+      transparent 100%
+    ) border-box;
   animation: border-rotate 4s linear infinite;
 }
 
 /* ============================================
    SCROLL REVEAL BASE STATES
-   (GSAP animates these)
    ============================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-}
-
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-60px);
-}
-
-.reveal-right {
-  opacity: 0;
-  transform: translateX(60px);
-}
-
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.9);
-}
+.reveal       { opacity: 0; transform: translateY(40px); }
+.reveal-left  { opacity: 0; transform: translateX(-60px); }
+.reveal-right { opacity: 0; transform: translateX(60px); }
+.reveal-scale { opacity: 0; transform: scale(0.9); }
 
 /* ============================================
-   SPLIT TEXT — each char/word gets this
+   SPLIT TEXT
    ============================================ */
-.split-char {
-  display: inline-block;
-  will-change: transform, opacity;
-}
-
-.split-word {
-  display: inline-block;
-  overflow: hidden;
-}
-
-.split-word-inner {
-  display: inline-block;
-  transform: translateY(100%);
-}
+.split-char       { display: inline-block; will-change: transform, opacity; }
+.split-word       { display: inline-block; overflow: hidden; }
+.split-word-inner { display: inline-block; transform: translateY(100%); }
 
 /* ============================================
    PROGRESS / LOADING BAR
    ============================================ */
-.progress-bar {
-  height: 1px;
-  background: var(--border);
-  position: relative;
-  overflow: hidden;
-}
-
+.progress-bar { height: 1px; background: var(--border); position: relative; overflow: hidden; }
 .progress-bar-fill {
   position: absolute;
   inset: 0;
@@ -339,38 +325,7 @@ body::before {
   transform-style: preserve-3d;
   will-change: transform;
 }
-
-.project-card:hover {
-  border-color: var(--border-hover);
-}
-
-.project-card-glow {
-  position: absolute;
-  inset: -1px;
-  border-radius: 17px;
-  background: conic-gradient(from 0deg, var(--accent), var(--accent-warm), var(--accent));
-  opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-smooth);
-  z-index: -1;
-}
-
-.project-card:hover .project-card-glow {
-  opacity: 0.3;
-}
-
-/* ============================================
-   HORIZONTAL SCROLL TRACK
-   ============================================ */
-.h-scroll-container {
-  overflow: hidden;
-  position: relative;
-}
-
-.h-scroll-track {
-  display: flex;
-  gap: 2rem;
-  will-change: transform;
-}
+.project-card:hover { border-color: var(--border-hover); }
 
 /* ============================================
    MAGNETIC BUTTON
@@ -383,7 +338,6 @@ body::before {
   transition: color var(--duration-fast) ease;
   will-change: transform;
 }
-
 .magnetic-btn::after {
   content: '';
   position: absolute;
@@ -393,47 +347,32 @@ body::before {
   background: var(--accent-glow);
   transition: opacity var(--duration-base) var(--ease-smooth);
 }
-
-.magnetic-btn:hover::after {
-  opacity: 1;
-}
+.magnetic-btn:hover::after { opacity: 1; }
 
 /* ============================================
    SECTION DIVIDER
    ============================================ */
 .section-line {
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    var(--border-hover) 20%, 
-    var(--border-hover) 80%, 
+  background: linear-gradient(90deg,
+    transparent,
+    var(--border-hover) 20%,
+    var(--border-hover) 80%,
     transparent);
 }
 
 /* ============================================
    SCROLLBAR
    ============================================ */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-0);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-hover);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-}
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* ============================================
    SELECTION
    ============================================ */
-::selection {
-  background: rgba(129, 140, 248, 0.25);
-  color: var(--text-1);
-}
+::selection { background: rgba(129, 140, 248, 0.25); color: var(--text-1); }
 
 /* ============================================
    KEYFRAMES
@@ -464,9 +403,9 @@ body::before {
   50%       { opacity: 0; }
 }
 
-.float { animation: float 6s ease-in-out infinite; }
+.float      { animation: float 6s ease-in-out infinite; }
 .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
-.blink { animation: blink 1s step-end infinite; }
+.blink      { animation: blink 1s step-end infinite; }
 
 /* ============================================
    LOADER
@@ -482,7 +421,6 @@ body::before {
   justify-content: center;
   overflow: hidden;
 }
-
 #loader .scan-line {
   position: absolute;
   left: 0;
@@ -494,11 +432,23 @@ body::before {
 }
 
 /* ============================================
-   ORBIT ANIMATION (Skills)
+   FIX #14: ORBIT ANIMATION
+   @property declarations above allow var() to
+   work inside @keyframes in all modern browsers.
    ============================================ */
 @keyframes orbit {
-  from { transform: rotate(var(--start-angle, 0deg)) translateX(var(--orbit-r, 120px)) rotate(calc(-1 * var(--start-angle, 0deg))); }
-  to   { transform: rotate(calc(var(--start-angle, 0deg) + 360deg)) translateX(var(--orbit-r, 120px)) rotate(calc(-1 * (var(--start-angle, 0deg) + 360deg))); }
+  from {
+    transform:
+      rotate(var(--start-angle))
+      translateX(var(--orbit-r))
+      rotate(calc(-1 * var(--start-angle)));
+  }
+  to {
+    transform:
+      rotate(calc(var(--start-angle) + 360deg))
+      translateX(var(--orbit-r))
+      rotate(calc(-1 * (var(--start-angle) + 360deg)));
+  }
 }
 
 .orbit-item {
@@ -531,6 +481,41 @@ body::before {
 .text-warm   { color: var(--accent-warm); }
 .text-muted  { color: var(--text-2); }
 .text-subtle { color: var(--text-3); }
-
-.bg-card { background: var(--bg-1); }
+.bg-card  { background: var(--bg-1); }
 .bg-panel { background: var(--bg-2); }
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Restore visible focus ring for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .float, .pulse-glow, .blink, .orbit-item, #loader .scan-line {
+    animation: none !important;
+  }
+}

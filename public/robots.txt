@@ -1,0 +1,7 @@
+# robots.txt
+# https://kaustubhdeshmukh.dev/robots.txt
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kaustubhdeshmukh.dev/sitemap.xml

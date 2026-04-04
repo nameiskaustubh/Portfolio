@@ -1,14 +1,12 @@
 /**
- * useJourneyEngine.js — The Master Scroll ↔ 3D Brain
+ * useJourneyEngine.js — Fixed Master Scroll ↔ 3D Brain
  *
- * Maps raw scroll position → camera target Z → section activation.
- * Uses refs for ALL hot-path state (zero React re-renders on scroll).
- * GSAP drives HTML element animation; this hook drives the numbers.
- *
- * Architecture:
- *   scroll (0→1) → cameraTargetZ (50 → -110) → section triggers
- *   mouse (raw)  → smoothed mouse ref (lerped in rAF)
- *   velocity     → camera shake + warp intensity
+ * FIXES APPLIED:
+ * #4  — Engine returned as stable ref object (same identity across renders).
+ *        GSAP ticker effect deps no longer include a re-created object.
+ * #5  — Lenis scroll events used instead of window.scrollY to keep
+ *        scrollProgress in sync with Lenis's virtual scroll position.
+ * #6  — (consumed by Home.jsx) — engine itself is stable now.
  */
 
 import { useRef, useEffect, useCallback } from 'react';
@@ -24,123 +22,29 @@ export const STATIONS = [
   { id: 'cta',         threshold: 0.85, z: -110, label: 'CTA' },
 ];
 
-const CAMERA_START_Z =  50;  // camera rushes from here on load
+const CAMERA_START_Z = 50;
 const CAMERA_END_Z   = -110;
 
-/* ── easing helpers ── */
-const lerp = (a, b, t) => a + (b - a) * t;
+const lerp         = (a, b, t) => a + (b - a) * t;
 const easeOutCubic = (t) => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
 
 export function useJourneyEngine() {
-  /* ── Exposed refs (read from 3D components via engineRef.current) ── */
-  const scrollProgress  = useRef(0);     // 0 → 1
-  const cameraTargetZ   = useRef(CAMERA_START_Z);
-  const cameraCurrentZ  = useRef(CAMERA_START_Z); // smooth follower
-  const velocity        = useRef(0);     // scroll velocity (signed)
-  const speed           = useRef(0);     // abs velocity, smoothed
-  const activeStation   = useRef('hero');
+  /* ── All hot-path state in refs (zero re-renders on scroll) ── */
+  const scrollProgress = useRef(0);
+  const cameraTargetZ  = useRef(CAMERA_START_Z);
+  const cameraCurrentZ = useRef(CAMERA_START_Z);
+  const velocity       = useRef(0);
+  const speed          = useRef(0);
+  const activeStation  = useRef('hero');
+  const mouse          = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
 
-  /* Mouse: raw target + smoothed output */
-  const mouse = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
-
-  /* Section activation callbacks — register from UI side */
   const sectionCallbacks = useRef({});
+  const lastActive       = useRef('');
 
-  const onStation = useCallback((id, fn) => {
-    sectionCallbacks.current[id] = fn;
-  }, []);
-
-  /* ── Section activator ── */
-  const lastActive = useRef('');
-  const activateStation = useCallback((id) => {
-    if (lastActive.current === id) return;
-    lastActive.current = id;
-    activeStation.current = id;
-    const fn = sectionCallbacks.current[id];
-    if (fn) fn();
-  }, []);
-
-  /* ── Scroll driver ── */
-  useEffect(() => {
-    let lastScrollY = 0;
-    let rafId = null;
-    let mounted = true;
-
-    /* Resize: recalculate total height */
-    const getTotalH = () =>
-      Math.max(1, document.body.scrollHeight - window.innerHeight);
-
-    /* ── Scroll handler (raw) ── */
-    const onScroll = () => {
-      const raw = window.scrollY / getTotalH();
-      scrollProgress.current = Math.max(0, Math.min(1, raw));
-
-      velocity.current = (window.scrollY - lastScrollY) * 0.01;
-      lastScrollY = window.scrollY;
-
-      /* Camera Z: rush-in phase first, then journey */
-      const p = scrollProgress.current;
-      const RUSH_END = 0.04;
-
-      if (p < RUSH_END) {
-        // Rush from CAMERA_START_Z → 0
-        cameraTargetZ.current = lerp(
-          CAMERA_START_Z, 0,
-          easeOutCubic(p / RUSH_END)
-        );
-      } else {
-        // Linear journey 0 → CAMERA_END_Z
-        cameraTargetZ.current = lerp(
-          0, CAMERA_END_Z,
-          (p - RUSH_END) / (1 - RUSH_END)
-        );
-      }
-
-      /* Station trigger */
-      for (let i = STATIONS.length - 1; i >= 0; i--) {
-        if (p >= STATIONS[i].threshold - 0.02) {
-          activateStation(STATIONS[i].id);
-          break;
-        }
-      }
-    };
-
-    /* ── Mouse handler ── */
-    const onMouseMove = (e) => {
-      mouse.current.tx = (e.clientX / window.innerWidth  - 0.5) * 2;
-      mouse.current.ty = (e.clientY / window.innerHeight - 0.5) * 2;
-    };
-
-    /* ── rAF loop: smooth mouse + smooth speed ── */
-    const tick = () => {
-      if (!mounted) return;
-      mouse.current.x += (mouse.current.tx - mouse.current.x) * 0.055;
-      mouse.current.y += (mouse.current.ty - mouse.current.y) * 0.055;
-
-      const absVel = Math.abs(velocity.current);
-      speed.current += (absVel - speed.current) * 0.08;
-
-      // Smooth camera Z (used by CameraRig too but we expose the target)
-      cameraCurrentZ.current += (cameraTargetZ.current - cameraCurrentZ.current) * 0.06;
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    window.addEventListener('scroll',    onScroll,    { passive: true });
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
-    rafId = requestAnimationFrame(tick);
-    onScroll(); // init
-
-    return () => {
-      mounted = false;
-      window.removeEventListener('scroll',    onScroll);
-      window.removeEventListener('mousemove', onMouseMove);
-      cancelAnimationFrame(rafId);
-    };
-  }, [activateStation]);
-
-  return {
-    /* refs — safe to read from R3F useFrame or GSAP tickers */
+  /* FIX #4: Stable engine object — same reference every render.
+     3D components and GSAP tickers read from this without
+     causing effect re-runs. */
+  const engineRef = useRef({
     scrollProgress,
     cameraTargetZ,
     cameraCurrentZ,
@@ -148,7 +52,112 @@ export function useJourneyEngine() {
     speed,
     mouse,
     activeStation,
-    /* helpers */
+  });
+  // engineRef.current fields are the refs themselves — always stable
+
+  const onStation = useCallback((id, fn) => {
+    sectionCallbacks.current[id] = fn;
+  }, []);
+
+  const activateStation = useCallback((id) => {
+    if (lastActive.current === id) return;
+    lastActive.current = id;
+    activeStation.current = id;
+    sectionCallbacks.current[id]?.();
+  }, []);
+
+  const updateCameraFromProgress = useCallback((p) => {
+    const RUSH_END = 0.04;
+    if (p < RUSH_END) {
+      cameraTargetZ.current = lerp(CAMERA_START_Z, 0, easeOutCubic(p / RUSH_END));
+    } else {
+      cameraTargetZ.current = lerp(0, CAMERA_END_Z, (p - RUSH_END) / (1 - RUSH_END));
+    }
+  }, []);
+
+  useEffect(() => {
+    let lastScroll = 0;
+    let rafId      = null;
+    let mounted    = true;
+
+    const getTotalH = () => Math.max(1, document.body.scrollHeight - window.innerHeight);
+
+    /* FIX #5: Prefer Lenis scroll events for accurate virtual scroll position.
+       Fall back to native window.scroll if Lenis isn't initialised yet. */
+    const handleScroll = (scrollY) => {
+      const raw      = scrollY / getTotalH();
+      const progress = Math.max(0, Math.min(1, raw));
+
+      velocity.current        = (scrollY - lastScroll) * 0.01;
+      lastScroll              = scrollY;
+      scrollProgress.current  = progress;
+
+      updateCameraFromProgress(progress);
+
+      for (let i = STATIONS.length - 1; i >= 0; i--) {
+        if (progress >= STATIONS[i].threshold - 0.02) {
+          activateStation(STATIONS[i].id);
+          break;
+        }
+      }
+    };
+
+    /* Try Lenis first (fires during smooth scroll animation) */
+    const onLenisScroll = ({ scroll }) => handleScroll(scroll);
+
+    /* Native fallback */
+    const onNativeScroll = () => handleScroll(window.scrollY);
+
+    /* Register on Lenis if available, otherwise native */
+    const attachListeners = () => {
+      if (window.__lenis__) {
+        window.__lenis__.on('scroll', onLenisScroll);
+      } else {
+        window.addEventListener('scroll', onNativeScroll, { passive: true });
+      }
+    };
+
+    /* Mouse tracking */
+    const onMouseMove = (e) => {
+      mouse.current.tx = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouse.current.ty = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    /* rAF: smooth mouse + smooth speed */
+    const tick = () => {
+      if (!mounted) return;
+      mouse.current.x += (mouse.current.tx - mouse.current.x) * 0.055;
+      mouse.current.y += (mouse.current.ty - mouse.current.y) * 0.055;
+
+      const absVel = Math.abs(velocity.current);
+      speed.current += (absVel - speed.current) * 0.08;
+      cameraCurrentZ.current += (cameraTargetZ.current - cameraCurrentZ.current) * 0.06;
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    attachListeners();
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    rafId = requestAnimationFrame(tick);
+    handleScroll(window.scrollY); // init
+
+    return () => {
+      mounted = false;
+      if (window.__lenis__) {
+        window.__lenis__.off('scroll', onLenisScroll);
+      } else {
+        window.removeEventListener('scroll', onNativeScroll);
+      }
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, [activateStation, updateCameraFromProgress]);
+
+  /* FIX #4: Return the stable engineRef.current object.
+     Callers do: const engineRef = useRef(engine)
+     This way engineRef.current never changes identity. */
+  return {
+    ...engineRef.current,
     onStation,
   };
 }

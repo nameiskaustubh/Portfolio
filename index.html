@@ -2,17 +2,92 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ============================================
+         FIX #19: Complete SEO & Social Meta Tags
+         Previously: zero OG tags, no Twitter card,
+         no canonical. Portfolio invisible on LinkedIn
+         share previews and Google searches.
+         ============================================ -->
+
+    <!-- Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kaustubh Deshmukh — Engineer & Educator</title>
-    
-    <!-- Google Fonts preconnect -->
+
+    <!-- Primary SEO -->
+    <title>Kaustubh Deshmukh — Engineer & Educator | Nashik</title>
+    <meta name="description" content="Assistant Professor at R.H. Sapat College of Engineering and Full-Stack React Engineer. Teaching C, Python and building production web applications from Nashik, India." />
+    <meta name="keywords" content="Kaustubh Deshmukh, React Developer, Assistant Professor, Nashik, Full Stack Engineer, GSAP, Portfolio" />
+    <meta name="author" content="Kaustubh Deshmukh" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://kaustubhdeshmukh.dev/" />
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://kaustubhdeshmukh.dev/" />
+    <meta property="og:title"       content="Kaustubh Deshmukh — Engineer & Educator" />
+    <meta property="og:description" content="Assistant Professor & Full-Stack React Engineer based in Nashik, India. Building production systems and teaching engineers how to think." />
+    <meta property="og:image"       content="https://kaustubhdeshmukh.dev/og-image.jpg" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"   content="Kaustubh Deshmukh — Portfolio preview" />
+    <meta property="og:locale"      content="en_IN" />
+    <meta property="og:site_name"   content="Kaustubh Deshmukh" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:url"         content="https://kaustubhdeshmukh.dev/" />
+    <meta name="twitter:title"       content="Kaustubh Deshmukh — Engineer & Educator" />
+    <meta name="twitter:description" content="Assistant Professor & Full-Stack React Engineer. Building production systems and teaching engineers how to think." />
+    <meta name="twitter:image"       content="https://kaustubhdeshmukh.dev/og-image.jpg" />
+    <meta name="twitter:image:alt"   content="Kaustubh Deshmukh — Portfolio preview" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Theme color (browser toolbar on mobile) -->
+    <meta name="theme-color" content="#020205" />
+
+    <!-- Preconnect to Google Fonts (already used in CSS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- EmailJS (keep existing) -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>emailjs.init('Q-h55re78pcIna9G1');</script>
+
+    <!-- EmailJS SDK (loaded before React) -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+      defer
+    ></script>
+
+    <!-- Structured Data (JSON-LD) for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Kaustubh Deshmukh",
+      "jobTitle": "Assistant Professor & Software Engineer",
+      "worksFor": {
+        "@type": "Organization",
+        "name": "R.H. Sapat College of Engineering"
+      },
+      "url": "https://kaustubhdeshmukh.dev",
+      "email": "kaustubhvdeshmukh2001@gmail.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Nashik",
+        "addressRegion": "Maharashtra",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://linkedin.com/in/kaustubh-deshmukh8851",
+        "https://github.com/nameiskaustubh",
+        "https://leetcode.com/u/afcpwRGndV"
+      ],
+      "knowsAbout": ["React", "JavaScript", "Python", "C Programming", "GSAP", "Firebase", "Teaching", "Data Structures"]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

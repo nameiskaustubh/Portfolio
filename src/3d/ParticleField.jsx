@@ -1,11 +1,11 @@
 /**
- * ParticleField.jsx — 4 000 energy particles drifting through the journey tunnel
+ * ParticleField.jsx — Fixed
  *
- * Performance notes:
- *  - Single BufferGeometry draw call
- *  - AdditiveBlending for free "glow" without post-processing
- *  - No texture (tiny footprint)
- *  - Uniforms via ShaderMaterial for speed-reactive streaking
+ * FIX #17: Adaptive particle COUNT based on device hardware concurrency.
+ *          4000 particles on a phone GPU = 15fps. Now scales gracefully:
+ *          ≤4 cores  → 1200 particles
+ *          ≤8 cores  → 2000 particles
+ *          >8 cores  → 4000 particles (original quality)
  */
 
 import { useRef, useMemo } from 'react';
@@ -16,14 +16,12 @@ const VERT = /* glsl */`
   attribute float aSize;
   attribute vec3  aColor;
   uniform   float uTime;
-  uniform   float uSpeed;  // camera velocity → stretch factor
+  uniform   float uSpeed;
   varying   vec3  vColor;
   varying   float vAlpha;
 
   void main() {
     vColor = aColor;
-
-    /* Drift each particle gently in XY */
     vec3 pos = position;
     pos.x += sin(uTime * 0.4 + position.z * 0.02) * 0.3;
     pos.y += cos(uTime * 0.3 + position.x * 0.015) * 0.2;
@@ -31,10 +29,8 @@ const VERT = /* glsl */`
     vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
     float dist = length(mvPos.xyz);
 
-    /* Perspective size + distance fade */
     gl_PointSize = aSize * (320.0 / dist) * (1.0 + uSpeed * 2.5);
     gl_Position  = projectionMatrix * mvPos;
-
     vAlpha = clamp(1.0 - dist / 110.0, 0.0, 1.0);
   }
 `;
@@ -42,9 +38,7 @@ const VERT = /* glsl */`
 const FRAG = /* glsl */`
   varying vec3  vColor;
   varying float vAlpha;
-
   void main() {
-    /* Circular disc with soft edge */
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
     float a = 1.0 - smoothstep(0.2, 0.5, d);
@@ -53,20 +47,28 @@ const FRAG = /* glsl */`
 `;
 
 const ACCENT_COLORS = [
-  new THREE.Color('#818cf8'), // indigo/purple
-  new THREE.Color('#22d3ee'), // cyan
-  new THREE.Color('#fbbf24'), // amber
-  new THREE.Color('#e879f9'), // fuchsia
-  new THREE.Color('#34d399'), // emerald
-  new THREE.Color('#f8fafc'), // near-white
+  new THREE.Color('#818cf8'),
+  new THREE.Color('#22d3ee'),
+  new THREE.Color('#fbbf24'),
+  new THREE.Color('#e879f9'),
+  new THREE.Color('#34d399'),
+  new THREE.Color('#f8fafc'),
 ];
 
-export default function ParticleField({ engineRef }) {
-  const meshRef = useRef();
-  const uTime   = useRef({ value: 0 });
-  const uSpeed  = useRef({ value: 0 });
+/* FIX #17: Derive particle count once at module init based on hardware */
+const getAdaptiveCount = () => {
+  if (typeof navigator === 'undefined') return 4000;
+  const cores = navigator.hardwareConcurrency ?? 4;
+  if (cores <= 4) return 1200;
+  if (cores <= 8) return 2000;
+  return 4000;
+};
 
-  const COUNT = 4000;
+const COUNT = getAdaptiveCount();
+
+export default function ParticleField({ engineRef }) {
+  const uTime  = useRef({ value: 0 });
+  const uSpeed = useRef({ value: 0 });
 
   const { positions, colors, sizes } = useMemo(() => {
     const positions = new Float32Array(COUNT * 3);
@@ -74,7 +76,6 @@ export default function ParticleField({ engineRef }) {
     const sizes     = new Float32Array(COUNT);
 
     for (let i = 0; i < COUNT; i++) {
-      /* Cylindrical distribution along journey axis */
       const angle  = Math.random() * Math.PI * 2;
       const radius = 4 + Math.random() * 32;
       positions[i * 3]     = Math.cos(angle) * radius;
@@ -86,10 +87,9 @@ export default function ParticleField({ engineRef }) {
       colors[i * 3 + 1] = col.g;
       colors[i * 3 + 2] = col.b;
 
-      /* Mix of tiny dust + larger glints */
       sizes[i] = Math.random() < 0.08
-        ? 1.8 + Math.random() * 1.4   // bright star
-        : 0.4 + Math.random() * 0.8;  // dust
+        ? 1.8 + Math.random() * 1.4
+        : 0.4 + Math.random() * 0.8;
     }
 
     return { positions, colors, sizes };
@@ -97,13 +97,12 @@ export default function ParticleField({ engineRef }) {
 
   useFrame((_, delta) => {
     uTime.current.value += delta;
-
     const spd = engineRef?.current?.speed?.current ?? 0;
     uSpeed.current.value += (Math.abs(spd) - uSpeed.current.value) * 0.12;
   });
 
   return (
-    <points ref={meshRef}>
+    <points>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={COUNT} array={positions} itemSize={3} />
         <bufferAttribute attach="attributes-color"    count={COUNT} array={colors}    itemSize={3} />
@@ -112,10 +111,7 @@ export default function ParticleField({ engineRef }) {
       <shaderMaterial
         vertexShader={VERT}
         fragmentShader={FRAG}
-        uniforms={{
-          uTime:  uTime.current,
-          uSpeed: uSpeed.current,
-        }}
+        uniforms={{ uTime: uTime.current, uSpeed: uSpeed.current }}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}

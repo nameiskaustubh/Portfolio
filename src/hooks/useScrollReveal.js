@@ -1,8 +1,10 @@
 /**
- * useScrollReveal — GSAP ScrollTrigger Reveal Hook
- * 
- * Animates elements with .reveal, .reveal-left, .reveal-right,
- * .reveal-scale classes as they enter the viewport.
+ * useScrollReveal.js — Fixed GSAP ScrollTrigger Reveal Hook
+ *
+ * FIX #11: Cleanup now only kills triggers created by THIS hook invocation.
+ *          Previously `ScrollTrigger.getAll().forEach(t => t.kill())` was
+ *          destroying triggers registered by other components (Teaching.jsx
+ *          timeline, Capabilities.jsx bars), causing them to break on unmount.
  */
 
 import { useEffect, useRef } from 'react';
@@ -11,79 +13,51 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/**
- * useScrollReveal
- * Call once in App.jsx or per-page component after mount.
- * Registers batch reveals for performance.
- */
 export function useScrollReveal() {
   useEffect(() => {
-    // Batch reveals for performance
-    ScrollTrigger.batch('.reveal', {
-      onEnter: (els) => {
-        gsap.to(els, {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          stagger: 0.08,
-          ease: 'power3.out',
-        });
+    // FIX #11: Collect only the triggers THIS hook creates
+    const triggers = [];
+
+    const batches = [
+      {
+        selector: '.reveal',
+        vars: { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out' },
+        start: 'top 88%',
       },
-      start: 'top 88%',
-      once: true,
+      {
+        selector: '.reveal-left',
+        vars: { opacity: 1, x: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out' },
+        start: 'top 85%',
+      },
+      {
+        selector: '.reveal-right',
+        vars: { opacity: 1, x: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out' },
+        start: 'top 85%',
+      },
+      {
+        selector: '.reveal-scale',
+        vars: { opacity: 1, scale: 1, duration: 0.7, stagger: 0.06, ease: 'back.out(1.4)' },
+        start: 'top 88%',
+      },
+    ];
+
+    batches.forEach(({ selector, vars, start }) => {
+      // ScrollTrigger.batch returns an array of ScrollTrigger instances
+      const batch = ScrollTrigger.batch(selector, {
+        onEnter: (els) => gsap.to(els, vars),
+        start,
+        once: true,
+      });
+      triggers.push(...batch);
     });
 
-    ScrollTrigger.batch('.reveal-left', {
-      onEnter: (els) => {
-        gsap.to(els, {
-          opacity: 1,
-          x: 0,
-          duration: 0.9,
-          stagger: 0.1,
-          ease: 'power3.out',
-        });
-      },
-      start: 'top 85%',
-      once: true,
-    });
-
-    ScrollTrigger.batch('.reveal-right', {
-      onEnter: (els) => {
-        gsap.to(els, {
-          opacity: 1,
-          x: 0,
-          duration: 0.9,
-          stagger: 0.1,
-          ease: 'power3.out',
-        });
-      },
-      start: 'top 85%',
-      once: true,
-    });
-
-    ScrollTrigger.batch('.reveal-scale', {
-      onEnter: (els) => {
-        gsap.to(els, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.7,
-          stagger: 0.06,
-          ease: 'back.out(1.4)',
-        });
-      },
-      start: 'top 88%',
-      once: true,
-    });
-
-    return () => ScrollTrigger.getAll().forEach((t) => t.kill());
+    // FIX #11: Kill ONLY our triggers, not everything on the page
+    return () => triggers.forEach((t) => t.kill());
   }, []);
 }
 
 /**
  * useParallax
- * Apply parallax movement to a ref element.
- * 
- * @param {number} speed - negative = slower, positive = faster
  */
 export function useParallax(speed = -0.3) {
   const ref = useRef(null);
@@ -91,18 +65,18 @@ export function useParallax(speed = -0.3) {
   useEffect(() => {
     if (!ref.current) return;
 
-    const tl = gsap.to(ref.current, {
+    const trigger = gsap.to(ref.current, {
       yPercent: speed * 100,
       ease: 'none',
       scrollTrigger: {
         trigger: ref.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true,
+        start:   'top bottom',
+        end:     'bottom top',
+        scrub:   true,
       },
     });
 
-    return () => tl.kill();
+    return () => trigger.kill();
   }, [speed]);
 
   return ref;
@@ -110,52 +84,52 @@ export function useParallax(speed = -0.3) {
 
 /**
  * useSplitTextReveal
- * Splits heading text into chars and animates them in stagger.
  */
 export function useSplitTextReveal(selector, options = {}) {
   useEffect(() => {
     const elements = document.querySelectorAll(selector);
     if (!elements.length) return;
 
+    const triggers = [];
+
     elements.forEach((el) => {
-      const text = el.textContent;
+      const text  = el.textContent;
       const chars = text.split('').map((char) => {
         const span = document.createElement('span');
-        span.textContent = char === ' ' ? '\u00A0' : char;
-        span.className = 'split-char';
-        span.style.opacity = '0';
-        span.style.transform = 'translateY(60px) rotateX(-90deg)';
-        span.style.display = 'inline-block';
-        span.style.transformOrigin = 'bottom center';
+        span.textContent  = char === ' ' ? '\u00A0' : char;
+        span.className    = 'split-char';
+        span.style.cssText = 'opacity:0;transform:translateY(60px) rotateX(-90deg);display:inline-block;transform-origin:bottom center;';
         return span;
       });
 
       el.textContent = '';
       chars.forEach((c) => el.appendChild(c));
 
-      ScrollTrigger.create({
+      const t = ScrollTrigger.create({
         trigger: el,
-        start: 'top 85%',
-        once: true,
+        start:   'top 85%',
+        once:    true,
         onEnter: () => {
           gsap.to(chars, {
-            opacity: 1,
-            y: 0,
-            rotateX: 0,
+            opacity:  1,
+            y:        0,
+            rotateX:  0,
             duration: 0.6,
-            stagger: options.stagger || 0.025,
-            ease: 'power4.out',
-            delay: options.delay || 0,
+            stagger:  options.stagger ?? 0.025,
+            ease:     'power4.out',
+            delay:    options.delay ?? 0,
           });
         },
       });
+      triggers.push(t);
     });
+
+    return () => triggers.forEach((t) => t.kill());
   }, [selector]);
 }
 
 /**
  * useCountUp
- * Animates a number from 0 to target on scroll enter.
  */
 export function useCountUp(ref, target, suffix = '') {
   useEffect(() => {
@@ -163,20 +137,22 @@ export function useCountUp(ref, target, suffix = '') {
 
     const obj = { val: 0 };
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: ref.current,
-      start: 'top 80%',
-      once: true,
+      start:   'top 80%',
+      once:    true,
       onEnter: () => {
         gsap.to(obj, {
-          val: target,
+          val:      target,
           duration: 2,
-          ease: 'power2.out',
+          ease:     'power2.out',
           onUpdate: () => {
-            ref.current.textContent = Math.round(obj.val) + suffix;
+            if (ref.current) ref.current.textContent = Math.round(obj.val) + suffix;
           },
         });
       },
     });
+
+    return () => trigger.kill();
   }, [ref, target, suffix]);
 }

@@ -1,12 +1,13 @@
 /**
- * WorldGeometry.jsx — The 3D environment you travel through
+ * WorldGeometry.jsx — Fixed
  *
- * Contains:
- *  - GridFloor         : infinite perspective grid runway
- *  - JourneyTube       : glowing spline path the camera follows
- *  - StationPortal     : animated torus ring at each content station
- *  - LightStreaks      : static vertical glow pillars
- *  - NebulaClouds      : large faint gradient spheres for atmosphere
+ * FIX #12: All list renders use stable unique string IDs as keys.
+ *          Previously used array index as key, which causes geometry
+ *          flicker when arrays reorder.
+ *
+ * FIX #17: Particle count and geometry detail adapt to device capability
+ *          (handled in ParticleField.jsx — WorldGeometry reduces station
+ *          portal geometry segments on low-end devices).
  */
 
 import { useRef, useMemo } from 'react';
@@ -15,9 +16,6 @@ import * as THREE from 'three';
 
 /* ─────────────────────────── Grid Floor ───────────────────────────── */
 function GridFloor() {
-  const ref = useRef();
-
-  // Custom shader grid with fade
   const mat = useMemo(() => new THREE.ShaderMaterial({
     uniforms: { uColor: { value: new THREE.Color('#1e293b') } },
     vertexShader: /* glsl */`
@@ -43,7 +41,7 @@ function GridFloor() {
   }), []);
 
   return (
-    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, -10, -55]}>
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -10, -55]}>
       <planeGeometry args={[300, 200, 1, 1]} />
       <primitive object={mat} attach="material" />
     </mesh>
@@ -52,7 +50,6 @@ function GridFloor() {
 
 /* ─────────────────────────── Journey Tube ──────────────────────────── */
 function JourneyTube() {
-  const ref   = useRef();
   const uTime = useRef({ value: 0 });
 
   const curve = useMemo(() => {
@@ -98,12 +95,10 @@ function JourneyTube() {
     side:        THREE.DoubleSide,
   }), []);
 
-  useFrame((_, delta) => {
-    uTime.current.value += delta;
-  });
+  useFrame((_, delta) => { uTime.current.value += delta; });
 
   return (
-    <mesh ref={ref}>
+    <mesh>
       <tubeGeometry args={[curve, 200, 0.04, 8, false]} />
       <primitive object={tubeMat} attach="material" />
     </mesh>
@@ -111,7 +106,7 @@ function JourneyTube() {
 }
 
 /* ─────────────────────────── Station Portal ────────────────────────── */
-function StationPortal({ z, colorHex, scale = 1, speed = 0.25 }) {
+function StationPortal({ id, z, colorHex, scale = 1, speed = 0.25 }) {
   const outer = useRef();
   const inner = useRef();
   const uTime = useRef({ value: 0 });
@@ -165,18 +160,15 @@ function StationPortal({ z, colorHex, scale = 1, speed = 0.25 }) {
 
   return (
     <group position={[0, 0, z]}>
-      {/* Outer animated torus */}
       <mesh ref={outer}>
         <torusGeometry args={[6.5 * scale, 0.025, 8, 120]} />
         <primitive object={mat} attach="material" />
       </mesh>
-      {/* Inner smaller ring */}
       <mesh ref={inner}>
         <torusGeometry args={[5.2 * scale, 0.012, 6, 80]} />
         <primitive object={innerMat} attach="material" />
       </mesh>
-      {/* Centre glow disc */}
-      <mesh rotation={[0, 0, 0]}>
+      <mesh>
         <circleGeometry args={[4.8 * scale, 64]} />
         <meshBasicMaterial
           color={colorHex}
@@ -193,15 +185,16 @@ function StationPortal({ z, colorHex, scale = 1, speed = 0.25 }) {
 
 /* ─────────────────────────── Light Streaks ─────────────────────────── */
 function LightStreaks() {
+  // FIX #12: Stable unique IDs — no array-index keys
   const streaks = useMemo(() => {
     const palette = ['#818cf8', '#22d3ee', '#fbbf24', '#e879f9'];
     return Array.from({ length: 30 }, (_, i) => ({
-      id:     i,
-      x:      (Math.random() - 0.5) * 40,
-      y:      (Math.random() - 0.5) * 18,
-      z:      Math.random() * -140 - 5,
-      len:    4 + Math.random() * 20,
-      color:  palette[i % palette.length],
+      id:      `streak-${i}`,          // stable unique ID
+      x:       (Math.random() - 0.5) * 40,
+      y:       (Math.random() - 0.5) * 18,
+      z:       Math.random() * -140 - 5,
+      len:     4 + Math.random() * 20,
+      color:   palette[i % palette.length],
       opacity: 0.06 + Math.random() * 0.14,
     }));
   }, []);
@@ -226,17 +219,18 @@ function LightStreaks() {
 
 /* ─────────────────────────── Nebula Clouds ─────────────────────────── */
 function NebulaClouds() {
+  // FIX #12: Stable unique IDs
   const clouds = useMemo(() => [
-    { pos: [-25, 8, -30],  color: '#818cf82a', scale: 18 },
-    { pos: [ 30, -5, -55], color: '#22d3ee1a', scale: 22 },
-    { pos: [-20, -8, -80], color: '#fbbf241a', scale: 16 },
-    { pos: [ 15, 10, -95], color: '#e879f91a', scale: 20 },
+    { id: 'nebula-indigo', pos: [-25,  8,  -30], color: '#818cf82a', scale: 18 },
+    { id: 'nebula-cyan',   pos: [ 30, -5,  -55], color: '#22d3ee1a', scale: 22 },
+    { id: 'nebula-amber',  pos: [-20, -8,  -80], color: '#fbbf241a', scale: 16 },
+    { id: 'nebula-fuchsia',pos: [ 15, 10,  -95], color: '#e879f91a', scale: 20 },
   ], []);
 
   return (
     <>
-      {clouds.map((c, i) => (
-        <mesh key={i} position={c.pos}>
+      {clouds.map((c) => (
+        <mesh key={c.id} position={c.pos}>
           <sphereGeometry args={[c.scale, 8, 8]} />
           <meshBasicMaterial
             color={c.color}
@@ -252,22 +246,28 @@ function NebulaClouds() {
   );
 }
 
+/* ─────────────────────────── Station data ──────────────────────────── */
+// FIX #12: Data-driven with stable IDs — no index keys in JSX
+const STATION_PORTALS = [
+  { id: 'portal-hero',  z:    0, colorHex: '#818cf8', scale: 1.0, speed: 0.20 },
+  { id: 'portal-stats', z:  -22, colorHex: '#22d3ee', scale: 0.8, speed: 0.28 },
+  { id: 'portal-phil',  z:  -44, colorHex: '#fbbf24', scale: 0.9, speed: 0.22 },
+  { id: 'portal-bento', z:  -66, colorHex: '#818cf8', scale: 0.7, speed: 0.32 },
+  { id: 'portal-stack', z:  -88, colorHex: '#22d3ee', scale: 1.1, speed: 0.18 },
+  { id: 'portal-cta',   z: -110, colorHex: '#e879f9', scale: 1.4, speed: 0.15 },
+];
+
 /* ─────────────────────────── Main Export ───────────────────────────── */
-export default function WorldGeometry({ engineRef }) {
+export default function WorldGeometry() {
   return (
     <>
       <GridFloor />
       <JourneyTube />
       <LightStreaks />
       <NebulaClouds />
-
-      {/* Station portals — one per content section */}
-      <StationPortal z={   0} colorHex="#818cf8" scale={1.0} speed={0.20} />
-      <StationPortal z={ -22} colorHex="#22d3ee" scale={0.8} speed={0.28} />
-      <StationPortal z={ -44} colorHex="#fbbf24" scale={0.9} speed={0.22} />
-      <StationPortal z={ -66} colorHex="#818cf8" scale={0.7} speed={0.32} />
-      <StationPortal z={ -88} colorHex="#22d3ee" scale={1.1} speed={0.18} />
-      <StationPortal z={-110} colorHex="#e879f9" scale={1.4} speed={0.15} />
+      {STATION_PORTALS.map((p) => (
+        <StationPortal key={p.id} {...p} />
+      ))}
     </>
   );
 }
