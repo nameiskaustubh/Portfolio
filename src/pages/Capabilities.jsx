@@ -2,227 +2,140 @@
  * Capabilities.jsx — Interactive Skills Universe
  * 
  * Features:
- * - CSS orbit animation for core skill cluster
- * - GSAP-animated progress bars on scroll
+ * - 3D React Three Fiber Skills Galaxy Sphere replacing the old orbit
  * - Filterable skill cards with hover depth effects
  * - "What I bring" dark manifesto section
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Html, OrbitControls } from '@react-three/drei';
+import * as THREE from 'three';
 
 /* ================================================================
-   ORBITING SKILLS CORE
+   3D SKILL GALAXY (Replaces OrbitSystem & ProficiencyBars)
    ================================================================ */
-const orbitSkills = [
-  { label: 'React',       angle: 0,   orbit: 140, speed: '12s', color: '#61dafb', size: 40 },
-  { label: 'Python',      angle: 51,  orbit: 140, speed: '12s', color: '#3b82f6', size: 36 },
-  { label: 'Node.js',     angle: 102, orbit: 140, speed: '12s', color: '#68a063', size: 36 },
-  { label: 'Firebase',    angle: 153, orbit: 140, speed: '12s', color: '#f59e0b', size: 34 },
-  { label: 'Tailwind',    angle: 204, orbit: 140, speed: '12s', color: '#38bdf8', size: 32 },
-  { label: 'MySQL',       angle: 255, orbit: 140, speed: '12s', color: '#f97316', size: 30 },
-  { label: 'GSAP',        angle: 306, orbit: 140, speed: '12s', color: '#88ce02', size: 32 },
-
-  { label: 'TypeScript',  angle: 0,   orbit: 220, speed: '20s', color: '#3178c6', size: 28 },
-  { label: 'C / C++',     angle: 60,  orbit: 220, speed: '20s', color: '#9ca3af', size: 28 },
-  { label: 'MongoDB',     angle: 120, orbit: 220, speed: '20s', color: '#4db33d', size: 26 },
-  { label: 'Express',     angle: 180, orbit: 220, speed: '20s', color: '#6b7280', size: 26 },
-  { label: 'Vite',        angle: 240, orbit: 220, speed: '20s', color: '#bd34fe', size: 26 },
-  { label: 'Git',         angle: 300, orbit: 220, speed: '20s', color: '#f05032', size: 24 },
+const skillsData = [
+  { label: 'React', color: '#61dafb', size: 1.2 },
+  { label: 'Python', color: '#3b82f6', size: 1.1 },
+  { label: 'Node.js', color: '#68a063', size: 1.1 },
+  { label: 'Firebase', color: '#f59e0b', size: 1.0 },
+  { label: 'Tailwind', color: '#38bdf8', size: 1.0 },
+  { label: 'MySQL', color: '#f97316', size: 0.9 },
+  { label: 'GSAP', color: '#88ce02', size: 1.0 },
+  { label: 'TypeScript', color: '#3178c6', size: 1.1 },
+  { label: 'C / C++', color: '#9ca3af', size: 1.1 },
+  { label: 'MongoDB', color: '#4db33d', size: 1.0 },
+  { label: 'Express', color: '#6b7280', size: 1.0 },
+  { label: 'Vite', color: '#bd34fe', size: 1.0 },
+  { label: 'Git', color: '#f05032', size: 0.9 },
 ];
 
-const OrbitSystem = () => {
+function SkillNode({ skill, position }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '500px',
-        height: '500px',
-        flexShrink: 0,
-      }}
-    >
-      {/* Orbit rings */}
-      {[140, 220].map((r) => (
+    <group position={position}>
+      {/* Visual node anchor point */}
+      <mesh>
+        <sphereGeometry args={[0.25, 16, 16]} />
+        <meshBasicMaterial color={hovered ? '#ffffff' : skill.color} />
+      </mesh>
+      {/* HTML label synced to 3D position */}
+      <Html distanceFactor={15} center zIndexRange={[100, 0]}>
         <div
-          key={r}
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: r * 2,
-            height: r * 2,
-            marginTop: -r,
-            marginLeft: -r,
-            borderRadius: '50%',
-            border: '1px solid rgba(255,255,255,0.05)',
-          }}
-        />
-      ))}
-
-      {/* Center core */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '80px',
-          height: '80px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--accent), var(--accent-warm))',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 40px rgba(129,140,248,0.4)',
-          zIndex: 10,
-        }}
-        className="pulse-glow"
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.4rem',
-            color: 'var(--bg-0)',
-            letterSpacing: '0.05em',
-          }}
-        >
-          KD
-        </span>
-      </div>
-
-      {/* Orbiting pills */}
-      {orbitSkills.map((skill, i) => {
-        const angleRad = (skill.angle * Math.PI) / 180;
-        const x = Math.cos(angleRad) * skill.orbit;
-        const y = Math.sin(angleRad) * skill.orbit;
-
-        return (
-          <div
-            key={skill.label}
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              marginTop: -14,
-              marginLeft: -14,
-              animation: `orbit ${skill.speed} linear infinite`,
-              '--start-angle': `${skill.angle}deg`,
-              '--orbit-r': `${skill.orbit}px`,
-            }}
-            className="orbit-item"
-          >
-            <div
-              style={{
-                padding: '4px 10px',
-                borderRadius: '100px',
-                background: 'var(--bg-2)',
-                border: `1px solid ${skill.color}40`,
-                fontFamily: 'var(--font-mono)',
-                fontSize: `${Math.max(0.55, skill.size / 60)}rem`,
-                color: skill.color,
-                whiteSpace: 'nowrap',
-                letterSpacing: '0.08em',
-                boxShadow: `0 0 12px ${skill.color}20`,
-                transition: 'transform 0.2s ease',
-              }}
-            >
-              {skill.label}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-/* ================================================================
-   PROFICIENCY BARS
-   ================================================================ */
-const proficiencyData = [
-  { label: 'Frontend (React, Tailwind, GSAP)',  pct: 88, color: 'var(--accent)' },
-  { label: 'Backend (Node.js, Firebase, SQL)',   pct: 72, color: 'var(--accent-cyan)' },
-  { label: 'Teaching & Pedagogy',               pct: 92, color: 'var(--accent-warm)' },
-  { label: 'Systems Thinking & DSA',            pct: 78, color: '#a78bfa' },
-  { label: 'Python & Scripting',                pct: 80, color: '#34d399' },
-];
-
-const ProficiencyBar = ({ item, index }) => {
-  const barRef = useRef(null);
-
-  useEffect(() => {
-    if (!barRef.current) return;
-    gsap.fromTo(
-      barRef.current,
-      { scaleX: 0 },
-      {
-        scaleX: 1,
-        duration: 1.2,
-        delay: index * 0.12,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: barRef.current,
-          start: 'top 85%',
-          once: true,
-        },
-      }
-    );
-  }, [index]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      style={{ marginBottom: '1.5rem' }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.85rem',
-            color: 'var(--text-2)',
-          }}
-        >
-          {item.label}
-        </span>
-        <span
-          style={{
+            padding: '6px 14px',
+            borderRadius: '100px',
+            background: 'rgba(2, 6, 23, 0.85)',
+            border: `1px solid ${hovered ? '#ffffff' : skill.color}60`,
+            backdropFilter: 'blur(8px)',
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.75rem',
-            color: item.color,
+            fontSize: `${skill.size}rem`,
+            color: hovered ? '#ffffff' : skill.color,
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            letterSpacing: '0.08em',
+            boxShadow: hovered ? `0 0 20px ${skill.color}50` : 'none',
+            transition: 'all 0.3s ease',
+            textTransform: 'uppercase',
+            pointerEvents: 'auto',
           }}
         >
-          {item.pct}%
-        </span>
-      </div>
-      <div
-        style={{
-          height: '2px',
-          background: 'var(--border)',
-          borderRadius: '2px',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          ref={barRef}
-          style={{
-            height: '100%',
-            width: `${item.pct}%`,
-            background: `linear-gradient(90deg, ${item.color}, ${item.color}80)`,
-            borderRadius: '2px',
-            transformOrigin: 'left',
-            transform: 'scaleX(0)',
-          }}
-        />
-      </div>
-    </motion.div>
+          {skill.label}
+        </div>
+      </Html>
+    </group>
   );
-};
+}
+
+function GalaxyCloud() {
+  const groupRef = useRef();
+
+  // Create spherical layout logic using Fibonacci spiral
+  const nodes = useMemo(() => {
+    const list = [];
+    const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
+    const total = skillsData.length;
+    const radius = 5.5; // Radius of the galaxy
+
+    for (let i = 0; i < total; i++) {
+      const y = 1 - (i / (total - 1)) * 2; // -1 to 1
+      const r = Math.sqrt(1 - y * y);
+      const theta = phi * i;
+
+      const x = Math.cos(theta) * r;
+      const z = Math.sin(theta) * r;
+
+      list.push({
+        position: [x * radius, y * radius, z * radius],
+        skill: skillsData[i]
+      });
+    }
+    return list;
+  }, []);
+
+  // Ambient dust particles
+  const dustParticles = useMemo(() => {
+    const temp = new Float32Array(500 * 3);
+    for (let i = 0; i < 500; i++) {
+      temp[i * 3] = (Math.random() - 0.5) * 20;
+      temp[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      temp[i * 3 + 2] = (Math.random() - 0.5) * 20;
+    }
+    return temp;
+  }, []);
+
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.12;
+      groupRef.current.rotation.x += delta * 0.04;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <mesh>
+        <sphereGeometry args={[1.2, 32, 32]} />
+        <meshBasicMaterial color="#818cf8" transparent opacity={0.08} />
+      </mesh>
+
+      <points>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" count={500} array={dustParticles} itemSize={3} />
+        </bufferGeometry>
+        <pointsMaterial size={0.05} color="#c7d2fe" transparent opacity={0.4} />
+      </points>
+
+      {nodes.map((node, i) => (
+        <SkillNode key={i} skill={node.skill} position={node.position} />
+      ))}
+    </group>
+  );
+}
 
 /* ================================================================
    CAPABILITY AREA CARD
@@ -237,8 +150,8 @@ const capabilities = [
     areas: [
       { name: 'React Development', skills: ['Component Architecture', 'Hooks & Context', 'State Management', 'Performance Opt.'] },
       { name: 'Modern JavaScript', skills: ['ES6+ Features', 'Async/Await', 'API Integration', 'Error Handling'] },
-      { name: 'Styling & UI',      skills: ['Tailwind CSS', 'Responsive Design', 'Animation', 'Accessibility'] },
-      { name: 'Build & Deploy',    skills: ['Vite', 'Firebase', 'Vercel', 'Git Workflow'] },
+      { name: 'Styling & UI', skills: ['Tailwind CSS', 'Responsive Design', 'Animation', 'Accessibility'] },
+      { name: 'Build & Deploy', skills: ['Vite', 'Firebase', 'Vercel', 'Git Workflow'] },
     ],
   },
   {
@@ -249,8 +162,8 @@ const capabilities = [
     summary: 'Translating complex technical concepts into structured learning experiences.',
     areas: [
       { name: 'Programming Fundamentals', skills: ['C Programming', 'Python', 'Problem Decomposition', 'Debugging Methodology'] },
-      { name: 'Curriculum Design',        skills: ['Course Planning', 'Assessment Design', 'Learning Outcomes', 'NBA/OBE Mapping'] },
-      { name: 'Student Mentorship',       skills: ['Project Guidance', 'Career Counseling', 'Code Review', 'Tech Interview Prep'] },
+      { name: 'Curriculum Design', skills: ['Course Planning', 'Assessment Design', 'Learning Outcomes', 'NBA/OBE Mapping'] },
+      { name: 'Student Mentorship', skills: ['Project Guidance', 'Career Counseling', 'Code Review', 'Tech Interview Prep'] },
     ],
   },
   {
@@ -261,8 +174,8 @@ const capabilities = [
     summary: 'Databases, APIs, and server-side technologies for complete full-stack solutions.',
     areas: [
       { name: 'Database Management', skills: ['MySQL', 'MongoDB', 'Schema Design', 'Query Optimization'] },
-      { name: 'Firebase',            skills: ['Authentication', 'Firestore', 'Real-time Data', 'Cloud Functions'] },
-      { name: 'API Development',     skills: ['RESTful APIs', 'Node.js + Express', 'Middleware', 'Data Validation'] },
+      { name: 'Firebase', skills: ['Authentication', 'Firestore', 'Real-time Data', 'Cloud Functions'] },
+      { name: 'API Development', skills: ['RESTful APIs', 'Node.js + Express', 'Middleware', 'Data Validation'] },
     ],
   },
   {
@@ -273,8 +186,8 @@ const capabilities = [
     summary: 'Holistic problem-solving with consideration for architecture and maintainability.',
     areas: [
       { name: 'Project Coordination', skills: ['Team Leadership', 'Technical Planning', 'Code Review', 'Documentation'] },
-      { name: 'Problem Solving',      skills: ['Algorithm Design', 'Data Structures', 'Optimization', 'Debugging'] },
-      { name: 'Quality Assurance',    skills: ['Code Standards', 'Error Handling', 'Testing Mindset', 'Performance'] },
+      { name: 'Problem Solving', skills: ['Algorithm Design', 'Data Structures', 'Optimization', 'Debugging'] },
+      { name: 'Quality Assurance', skills: ['Code Standards', 'Error Handling', 'Testing Mindset', 'Performance'] },
     ],
   },
 ];
@@ -297,7 +210,6 @@ const CapabilityCard = ({ cap, index }) => {
       }}
       whileHover={{ borderColor: `${cap.color}40` }}
     >
-      {/* Header */}
       <div
         onClick={() => setExpanded((e) => !e)}
         style={{
@@ -439,13 +351,13 @@ const Capabilities = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          style={{ marginBottom: '6rem' }}
+          style={{ marginBottom: '4rem' }}
         >
           <div className="label" style={{ marginBottom: '1.5rem' }}>Capabilities</div>
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3rem, 8vw, 7rem)',
+              fontSize: 'clamp(2.5rem, 8vw, 6.5rem)',
               letterSpacing: '0.01em',
               lineHeight: 0.95,
               marginBottom: '1.5rem',
@@ -466,39 +378,54 @@ const Capabilities = () => {
             }}
           >
             A hybrid skill set spanning teaching, engineering, and systems
-            thinking — built to deliver both in the classroom and in production.
+            thinking — mapped across a 3D constellation. Feel free to explore and drag the galaxy!
           </p>
         </motion.div>
 
-        {/* ---- ORBIT SYSTEM + Proficiency ---- */}
-        <div
+        {/* ---- 3D GALAXY CANVAS ---- */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           style={{
-            display: 'flex',
-            gap: '4rem',
-            alignItems: 'center',
+            width: '100%',
+            height: 'clamp(400px, 60vh, 700px)',
             marginBottom: '7rem',
-            flexWrap: 'wrap',
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            border: '1px solid var(--border)',
+            background: 'rgba(15, 23, 42, 0.4)',
+            cursor: 'grab',
           }}
         >
-          {/* Orbit */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            style={{ flex: '0 0 auto' }}
+          <Canvas
+            camera={{ position: [0, 0, 15], fov: 50 }}
+            gl={{ antialias: true, alpha: true }}
           >
-            <OrbitSystem />
-          </motion.div>
-
-          {/* Proficiency bars */}
-          <div style={{ flex: 1, minWidth: '280px' }}>
-            <div className="label" style={{ marginBottom: '2rem' }}>Proficiency</div>
-            {proficiencyData.map((item, i) => (
-              <ProficiencyBar key={item.label} item={item} index={i} />
-            ))}
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} intensity={1} color="#818cf8" />
+            <GalaxyCloud />
+            <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} />
+          </Canvas>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '1rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.65rem',
+              letterSpacing: '0.1em',
+              color: 'var(--text-3)',
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            [ DRAG TO ROTATE ]
           </div>
-        </div>
+        </motion.div>
 
         {/* ---- Filter ---- */}
         <div
@@ -524,7 +451,6 @@ const Capabilities = () => {
                 background: activeTag === tag ? 'var(--text-1)' : 'transparent',
                 color: activeTag === tag ? 'var(--bg-0)' : 'var(--text-3)',
                 transition: 'all 0.3s ease',
-                cursor: 'none',
               }}
             >
               {tag}
@@ -571,10 +497,10 @@ const Capabilities = () => {
             }}
           >
             {[
-              { title: 'Academic Rigor',       body: 'Systematic problem-solving, clear documentation, and emphasis on maintainable code others can extend.', color: 'var(--accent)' },
-              { title: 'Industry Awareness',   body: 'Understanding of production constraints, deployment workflows, and trade-offs between ideal and practical.', color: 'var(--accent-warm)' },
-              { title: 'Teaching Mindset',     body: 'Ability to explain complex technical decisions clearly and create documentation as a learning resource.', color: 'var(--accent-cyan)' },
-              { title: 'Coordination Proven',  body: 'Track record coordinating multi-person projects, conducting reviews, and maintaining technical standards.', color: '#a78bfa' },
+              { title: 'Academic Rigor', body: 'Systematic problem-solving, clear documentation, and emphasis on maintainable code others can extend.', color: 'var(--accent)' },
+              { title: 'Industry Awareness', body: 'Understanding of production constraints, deployment workflows, and trade-offs between ideal and practical.', color: 'var(--accent-warm)' },
+              { title: 'Teaching Mindset', body: 'Ability to explain complex technical decisions clearly and create documentation as a learning resource.', color: 'var(--accent-cyan)' },
+              { title: 'Coordination Proven', body: 'Track record coordinating multi-person projects, conducting reviews, and maintaining technical standards.', color: '#a78bfa' },
             ].map((item) => (
               <div key={item.title}>
                 <div

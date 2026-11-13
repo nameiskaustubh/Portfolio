@@ -61,7 +61,7 @@
 }
 
 @property --orbit-r {
-  syntax: '<length>';
+  syntax: '<length-percentage>';
   initial-value: 120px;
   inherits: false;
 }

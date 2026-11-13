@@ -1,16 +1,22 @@
-<<<<<<< HEAD
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
 # Portfolio
->>>>>>> de9e5a7929a29ff51effba9fb0bfbbd5f1a099da
+
+A Vite + React portfolio site for Kaustubh Deshmukh.
+
+## Local setup
+
+1. Install dependencies:
+   npm install
+2. Copy the environment template:
+   copy .env.example .env
+3. Fill in the required values in `.env`.
+
+## Required environment variables
+
+- `VITE_EMAILJS_SERVICE_ID`
+- `VITE_EMAILJS_TEMPLATE_ID`
+- `VITE_EMAILJS_PUBLIC_KEY`
+
+Notes:
+- `.env` is git-ignored and should never be committed.
+- Vite embeds `VITE_*` values in browser code. EmailJS's service ID, template ID, and public key are intended for client-side use; never put private credentials such as an OpenAI API key in a `VITE_*` variable.
+- the contact form uses the EmailJS npm SDK instead of a CDN global so it works reliably in Vite builds.

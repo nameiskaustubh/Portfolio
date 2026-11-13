@@ -7,15 +7,16 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import emailjs from '@emailjs/browser';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 
 /* ── Environment variable validation ── */
-const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID?.trim();
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID?.trim();
+const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY?.trim();
 
-const emailjsConfigured = EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY;
+const emailjsConfigured = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
 
 /* ── Animated input field ── */
 const MagneticField = ({ label, children, required }) => {
@@ -178,9 +179,12 @@ const Contact = () => {
   const [submitStatus,  setSubmitStatus]  = useState(null);
 
   useEffect(() => {
-    /* FIX #2: init uses env var, not hardcoded key */
-    if (window.emailjs && emailjsConfigured) {
-      window.emailjs.init(EMAILJS_PUBLIC_KEY);
+    if (emailjsConfigured) {
+      try {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      } catch (error) {
+        console.warn('EmailJS init failed:', error);
+      }
     }
 
     const ctx = gsap.context(() => {
@@ -209,13 +213,6 @@ const Contact = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    const emailjs = window.emailjs;
-    if (!emailjs) {
-      setSubmitStatus('error');
-      setIsSubmitting(false);
-      return;
-    }
-
     const templateParams = {
       name:         formData.name,
       email:        formData.email,
@@ -228,12 +225,11 @@ const Contact = () => {
     };
 
     try {
-      /* FIX #2: All IDs from env vars */
       await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         templateParams,
-        EMAILJS_PUBLIC_KEY
+        { publicKey: EMAILJS_PUBLIC_KEY }
       );
       setSubmitStatus('success');
       setFormData({ name: '', email: '', organization: '', inquiry: '', message: '' });

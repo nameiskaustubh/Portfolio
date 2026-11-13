@@ -12,10 +12,36 @@
  *  (zero extra draw passes → perfect for 60fps target)
  */
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Stars } from '@react-three/drei';
+import { useRef } from 'react';
 import CameraRig       from './CameraRig';
 import ParticleField   from './ParticleField';
 import WorldGeometry   from './WorldGeometry';
+
+const GalaxyBackground = () => {
+  const starsRef = useRef();
+  
+  useFrame((state, delta) => {
+    if (starsRef.current) {
+      // Very slow majestic rotation of the galaxy
+      starsRef.current.rotation.y -= delta * 0.02;
+      starsRef.current.rotation.x -= delta * 0.005;
+    }
+  });
+
+  return (
+    <group ref={starsRef} position={[0, 0, -80]}>
+      {/* 
+        radius: Extent of the starfield 
+        depth: Depth from center
+        count: Star particle count
+        factor: Size multiplier
+      */}
+      <Stars radius={100} depth={50} count={6000} factor={6} saturation={1} fade speed={1} />
+    </group>
+  );
+};
 
 export default function Scene({ engineRef }) {
   return (
@@ -30,7 +56,7 @@ export default function Scene({ engineRef }) {
       aria-hidden="true"
     >
       <Canvas
-        camera={{ position: [0, 0, 50], fov: 75, near: 0.1, far: 400 }}
+        camera={{ position: [0, 0, 50], fov: 75, near: 0.1, far: 500 }}
         gl={{
           antialias:         true,
           alpha:             false,
@@ -44,7 +70,7 @@ export default function Scene({ engineRef }) {
         style={{ width: '100%', height: '100%' }}
       >
         {/* Depth fog — darkens far-away geometry, sells the tunnel */}
-        <fog attach="fog" args={['#020617', 8, 160]} />
+        <fog attach="fog" args={['#020617', 8, 200]} />
 
         {/* Ambient: just enough to avoid pure-black geometry */}
         <ambientLight intensity={0.06} />
@@ -53,6 +79,9 @@ export default function Scene({ engineRef }) {
         <pointLight position={[0, 0, 20]} intensity={0.4} color="#818cf8" distance={80} decay={2} />
         <pointLight position={[0, 0, -60]} intensity={0.3} color="#22d3ee" distance={80} decay={2} />
         <pointLight position={[0, 0, -110]} intensity={0.5} color="#e879f9" distance={80} decay={2} />
+
+        {/* Deep Galaxy Theme */}
+        <GalaxyBackground />
 
         <CameraRig       engineRef={engineRef} />
         <ParticleField   engineRef={engineRef} />
